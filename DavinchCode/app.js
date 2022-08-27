@@ -15,12 +15,9 @@ class Deck {
     this.blackCards = [];
 
     for (let i = 0; i < 13; ++i) {
-      this.whiteCards.push(new Card("white", n));
-      this.whiteCards.push(new Card("black", n));
+      this.whiteCards.push(new Card("white", i));
+      this.blackCards.push(new Card("black", i));
     }
-
-    this.whiteCards[12].number = "-";
-    this.blackCards[12].number = "-";
 
     this.randomize(this.whiteCards);
     this.randomize(this.blackCards);
@@ -48,3 +45,7 @@ class Deck {
 class Player {}
 
 class Computer {}
+
+arr = [0, 1];
+arr[0] = "asddas";
+console.log(arr);
