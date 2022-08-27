@@ -7,6 +7,15 @@ class Card {
     this.color = c;
     this.number = n;
   }
+
+  static compare(a, b) {
+    if (a.number > b.number) return 1;
+    else if (a.number < b.number) return -1;
+    else {
+      if (a.color === "black") return -1;
+      else return 0;
+    }
+  }
 }
 
 class Deck {
@@ -45,7 +54,3 @@ class Deck {
 class Player {}
 
 class Computer {}
-
-arr = [0, 1];
-arr[0] = "asddas";
-console.log(arr);
