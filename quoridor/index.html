@@ -1,13 +1,17 @@
 <!DOCTYPE HTML>
 <head>
-	<style>
-
-	</style>
+	<link rel="stylesheet" href="board.css">
+	<script src="Board.js"></script>
 </head>
+
 <body>
-	<p>commit tess  2t</p>
-	<p>git test werewrewrerwerewewr2022 08 26 13:17</p>
-	<p>git tesft sad2022 08 26 1asd3:30</p>
-	<p>git tests  2s0sd22 08 26 13 :54</p>
-	git commit text 8/27 1223
+	
+	<script>
+		document.addEventListener("mousedown",function(){
+			console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
+		})
+		let board = new Board();
+		board.test();
+		board.getBoardElement();
+	</script>
 </body>     
