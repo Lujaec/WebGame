@@ -52,8 +52,6 @@ class Deck {
   }
 }
 
-class Play {}
-
 class Player {
   constructor() {
     this.cards = [];
