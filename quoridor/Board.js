@@ -2,42 +2,43 @@ class Board{
     constructor(){
 
     }
-    getBoardElement(){
+    getPlayerBoard(){
         let board=document.createElement('table');
-				board.id="boardPlayer";
-				console.log("getBoarElement");
+				board.id="playerBoard";
+				console.log("getPlayerBoard");
+				
 				for(let i=0;i<9;i++){
 					let boardRow = document.createElement('tr');
 					for(let j=0;j<9;j++){
-						let boardUnit=document.createElement('td');
-						boardUnit.id="bd"+i+j;
-						boardUnit.setAttribute("data-row",i); //어차피문자열변환
-						boardUnit.setAttribute("data-col",j); //어차피문자열변환
-						boardUnit.innerHTML="("+i+", "+j+")";
-						boardUnit.className="boardUnitPlayer";
+						let boardUnit = getBoardUnit(i,j,'boardUnitPlayer');
 						boardRow.append(boardUnit);
 					}
 					board.append(boardRow);
 				}
 				document.body.append(board);
     }
-		getCanvas(){
+		getObstacleBoard(){
 			let board=document.createElement('table');
-				board.id="boardObstacle";
-				console.log("getInnerBoardElement");
+				board.id="obstacleBoard";
+				console.log("getObstacleBoard");
 				for(let i=0;i<8;i++){
 					let boardRow = document.createElement('tr');
 					for(let j=0;j<8;j++){
-						let boardUnit=document.createElement('td');
-						boardUnit.id="bd"+i+j;
-						boardUnit.setAttribute("data-row",i); //어차피문자열변환
-						boardUnit.setAttribute("data-col",j); //어차피문자열변환
-						//boardUnit.innerHTML="("+i+", "+j+")";
-						boardUnit.className="boardUnitObstacle";
+						let boardUnit=getBoardUnit(i,j,'boardUnitObstacle');
 						boardRow.append(boardUnit);
 					}
 					board.append(boardRow);
 				}
 				document.body.append(board);
 		}
+	
+}
+function getBoardUnit(row, col, className) {
+	let elem=document.createElement('td');
+	/*elem.id="bd"+i+j;*/
+	elem.setAttribute("data-row",row); //어차피문자열변환
+	elem.setAttribute("data-col",col); //어차피문자열변환
+	if(className == 'boardUnitPlayer'){ elem.innerHTML="("+row+", "+col+")"; }
+	elem.className=className;
+	return elem;
 }

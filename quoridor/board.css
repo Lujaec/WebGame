@@ -1,4 +1,4 @@
-#boardPlayer {
+#playerBoard {
   border: 1px solid black;
 	border-spacing: 20px;
   box-sizing: border-box;
@@ -8,25 +8,26 @@
   z-index: 23;
   pointer-events: none;
 }
-#boardPlayer td {
+#playerBoard td {
   width: 50px;
 	height: 50px;
   border: 1px solid black;
   box-sizing: border-box;
   pointer-events: all;
 }
-#boardObstacle {
-  table-layout: fixed; /*  ??*/
+#obstacleBoard {
+  
   border-spacing: 50px;
   left: 42px;
   top: -610px;
   position: relative;
   
 }
-#boardObstacle td {
+#obstacleBoard td {
   width: 20px;
 	height: 20px;
   border: 1px solid red;
   box-sizing: border-box;
-  
+  text-overflow: ellipsis;
+  font-size: 1px;
 }

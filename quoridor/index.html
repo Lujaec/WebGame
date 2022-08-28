@@ -10,12 +10,12 @@
 		
 		let board = new Board();
 		
-		board.getBoardElement();
-		board.getCanvas();
+		board.getPlayerBoard();
+		board.getObstacleBoard();
 		
 
 
-		let players = document.querySelectorAll('#boardPlayer td');
+		let players = document.querySelectorAll('#playerBoard td');
 		for(elem of players){
 			elem.onclick = function(event){
 				let target = event.target;
@@ -23,7 +23,7 @@
 			}
 		}
 
-		let obstacles = document.querySelectorAll('#boardObstacle td');
+		let obstacles = document.querySelectorAll('#obstacleBoard td');
 		for(elem of obstacles){
 			elem.onclick = function(event){
 				let target = event.target;
