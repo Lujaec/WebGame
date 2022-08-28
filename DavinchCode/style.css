@@ -1,0 +1,35 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-sSize: 20px;
+  --font-mSize: 24px;
+  --font-lSize: 45px;
+  --main-bg-color: #eeeeee;
+  --main-font: "Aboreto", cursive;
+}
+
+body {
+  background-color: var(--main-bg-color);
+}
+
+.top {
+  font-size: var(--font-lSize);
+  font-family: var(--main-font);
+  font-weight: bold;
+  border: 2px solid;
+  padding: 30px;
+}
+
+.computer-cards {
+  align-items: centerkl;
+}
+
+.container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
