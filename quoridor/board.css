@@ -1,22 +1,32 @@
 #boardPlayer {
-  width: 700px;
-  height: 700px;
   border: 1px solid black;
-	border-radius: 10px;
 	border-spacing: 20px;
-  
+  box-sizing: border-box;
+  top: 21px;
+  left: 21px;
+  position: relative;
+  z-index: 23;
+  pointer-events: none;
 }
-#boardObstacle {
-  width: 700px;
-  height: 700px;
-  border: 1px solid black;
-  z-index: 1;
-  left: 50px;
-  top:50px;
-}
-td {
+#boardPlayer td {
   width: 50px;
 	height: 50px;
   border: 1px solid black;
   box-sizing: border-box;
+  pointer-events: all;
+}
+#boardObstacle {
+  table-layout: fixed; /*  ??*/
+  border-spacing: 50px;
+  left: 42px;
+  top: -610px;
+  position: relative;
+  
+}
+#boardObstacle td {
+  width: 20px;
+	height: 20px;
+  border: 1px solid red;
+  box-sizing: border-box;
+  
 }

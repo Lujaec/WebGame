@@ -32,7 +32,7 @@ class Board{
 						boardUnit.id="bd"+i+j;
 						boardUnit.setAttribute("data-row",i); //어차피문자열변환
 						boardUnit.setAttribute("data-col",j); //어차피문자열변환
-						boardUnit.innerHTML="("+i+", "+j+")";
+						//boardUnit.innerHTML="("+i+", "+j+")";
 						boardUnit.className="boardUnitObstacle";
 						boardRow.append(boardUnit);
 					}

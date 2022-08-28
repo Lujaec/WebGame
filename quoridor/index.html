@@ -7,14 +7,29 @@
 <body>
 	
 	<script>
-		document.addEventListener("mousedown",function(){
-			console.log(document.documentElement.clientWidth,document.documentElement.clientHeight);
-		})
+		
 		let board = new Board();
 		
 		board.getBoardElement();
 		board.getCanvas();
-		let units=document.querySelectorAll("td");
+		
+
+
+		let players = document.querySelectorAll('#boardPlayer td');
+		for(elem of players){
+			elem.onclick = function(event){
+				let target = event.target;
+				console.log(target.getBoundingClientRect(), target.id,target.className);
+			}
+		}
+
+		let obstacles = document.querySelectorAll('#boardObstacle td');
+		for(elem of obstacles){
+			elem.onclick = function(event){
+				let target = event.target;
+				console.log(target.getBoundingClientRect(), target.id,target.className);
+			}
+		}
 		
 	</script>
 </body>     
