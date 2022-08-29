@@ -2,32 +2,22 @@
 <head>
 	<link rel="stylesheet" href="board.css">
 	<script src="Board.js"></script>
+	<script src="Player.js"></script>
 </head>
 
 <body>
 	
 	<script>
+		let player1 = new Player("박진우");
+		let player2 = new Player("이유재");
+		player1.setPos(8,4);
+		player2.setPos(0,4);
 		
 		let board = new Board();
+		board.createBoard();
 		board.initBoard();
-		
+		board.printBoardArr();
 
-
-		let players = document.querySelectorAll('#playerBoard td');
-		for(elem of players){
-			elem.onclick = function(event){
-				let target = event.target;
-				console.log(target.getBoundingClientRect(), target.id,target.className);
-			}
-		}
-
-		let obstacles = document.querySelectorAll('#obstacleBoard td');
-		for(elem of obstacles){
-			elem.onclick = function(event){
-				let target = event.target;
-				console.log(target.getBoundingClientRect(), target.id,target.className);
-			}
-		}
 		
 	</script>
 </body>     
