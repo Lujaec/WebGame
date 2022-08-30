@@ -1,6 +1,4 @@
-import { Board } from "./Board.js";
 
-let playerBoard=document.querySelector('#playerBoard');
 export class Player {
     constructor(name, color, row, col){
         this._name = name;
@@ -24,8 +22,7 @@ export class Player {
     getPos() { return this._pos; }
     setPos(nowPos, r,c) { 
         this._pos.row = r, this._pos.col = c;
-        let playerBoard=document.querySelector('#playerBoard');
-        //playerBoard.moveTo(12312,123123);
+        playerBoard.moveTo(12312,123123);
     }
 
 }
