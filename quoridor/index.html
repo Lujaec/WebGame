@@ -3,8 +3,28 @@
 	<link rel="stylesheet" href="./board.css">
 	<script type="module" src="./Board.js"></script>
 	<script type="module" src="./Player.js"></script>
-	<script type="module" src="./main.js"></script>
 </head>
 
 <body>
+	
+	<script type="module">
+		import {Board} from "./Board.js";
+		import {Player} from "./Player.js";
+		
+		
+		let player1 = new Player("박진우", "black",8,4);
+		let player2 = new Player("이유재","white",0,4);
+		
+		export let board = new Board();
+		board.createBoard();
+		board.initBoard();
+		board.printBoardArr();
+		
+		//player1.setPos(this.getPos(),1,1);
+		let tmp=player1.getPos();
+		console.log("p1 :"+tmp.row+tmp.col);
+		player1.setPos(tmp,1,1);
+		console.log("p1 :"+tmp.row+tmp.col);
+	
+	</script>
 </body>     
