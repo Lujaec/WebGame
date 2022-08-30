@@ -30,9 +30,9 @@ export class Deck {
 
   pop(color) {
     if (color == "white") {
-      return this.whiteCards.pop("white");
+      return this.whiteCards.pop();
     } else {
-      return this.blackCards.pop("black");
+      return this.blackCards.pop();
     }
   }
 }
