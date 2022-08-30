@@ -20,9 +20,8 @@ export class Player {
     setIsMyTurn(value_Bool){ this._isMyTurn = value_Bool;}
 
     getPos() { return this._pos; }
-    setPos(nowPos, r,c) { 
+    setPos(r,c) { 
         this._pos.row = r, this._pos.col = c;
-        playerBoard.moveTo(12312,123123);
     }
 
 }

@@ -17,7 +17,7 @@ function createTable(board,size,className){
 }
 function createBoardUnit(row, col, className) {
 	let elem=document.createElement('td');
-	/*elem.id="bd"+i+j;*/
+	elem.id="pbu"+row+col;
 	elem.setAttribute("data-row",row); //어차피문자열변환
 	elem.setAttribute("data-col",col); //어차피문자열변환
 	if(className == 'playerBoardUnit'){ elem.innerHTML="("+row+", "+col+")"; }
