@@ -46,3 +46,11 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.deck div {
+  transition: 0.4s ease-in-out;
+}
+
+.deck div:hover {
+  transform: scale(1.2);
+}
