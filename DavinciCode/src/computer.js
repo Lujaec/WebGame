@@ -10,6 +10,27 @@ export class Computer {
     this.addedCardPosOfPlayer = []; // player가 뽑고 넣은 위치를 기억
   }
 
+  pick(color, deck) {
+    const $remainText = document.querySelector("#" + color + "RemainText");
+    const remain = $remainText.textContent.split(" ")[2];
+
+    if (remain > 0)
+      $remainText.textContent = $remainText.textContent.replace(
+        remain,
+        remain - 1
+      );
+
+    if (color === "white" && deck.whiteCards.length >= 1) {
+      this.cards.push(deck.whiteCards.pop("white"));
+      this.LastPickedCard = this.cards[this.cards.length - 1];
+    } else if (color === "black" && deck.blackCards.length >= 1) {
+      this.cards.push(deck.blackCards.pop("black"));
+      this.LastPickedCard = this.cards[this.cards.length - 1];
+    } else {
+      this.LastPickedCard = null;
+    }
+  }
+
   guess(playerCards) {
     this.initRange();
 
@@ -35,6 +56,7 @@ export class Computer {
               });
             }
           }
+
           for (const j = i + 1; j < playerCards.length; ++i) {
             if (playerCards[j].color === playerCards[i].color) {
               possibility.filter(function (value) {
