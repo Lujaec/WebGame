@@ -1,23 +1,30 @@
 <!DOCTYPE HTML>
 <head>
-	<link rel="stylesheet" href="board.css">
-	<script src="Board.js"></script>
-	<script src="Player.js"></script>
+	<link rel="stylesheet" href="./board.css">
+	<script type="module" src="./Board.js"></script>
+	<script type="module" src="./Player.js"></script>
 </head>
 
 <body>
 	
-	<script>
-		let player1 = new Player("박진우");
-		let player2 = new Player("이유재");
-		player1.setPos(8,4);
-		player2.setPos(0,4);
+	<script type="module">
+		import {Board} from "./Board.js";
+		import {Player} from "./Player.js";
 		
-		let board = new Board();
+		
+		let player1 = new Player("박진우", "black",8,4);
+		let player2 = new Player("이유재","white",0,4);
+		
+		export let board = new Board();
 		board.createBoard();
 		board.initBoard();
 		board.printBoardArr();
-
 		
+		//player1.setPos(this.getPos(),1,1);
+		let tmp=player1.getPos();
+		console.log("p1 :"+tmp.row+tmp.col);
+		player1.setPos(tmp,1,1);
+		console.log("p1 :"+tmp.row+tmp.col);
+	
 	</script>
 </body>     

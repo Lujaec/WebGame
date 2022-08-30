@@ -1,4 +1,4 @@
- class Board{
+export class Board{
     constructor(){
 			this._boardArr = new Array(9);
 			for(let i=0;i<9;i++){
@@ -11,7 +11,7 @@
 			return this._boardArr;
 		}
 		moveTo(from,to){
-
+			 console.log(`move ${from} to ${to}`);
 		}
 		printBoardArr(){
 			for(let i=0;i<9;i++){
@@ -64,7 +64,7 @@ function createBoardUnit(row, col, className) {
 }
 function initPlayerBoardEvents(){
 	let players = document.querySelectorAll('#playerBoard td');
-		for(elem of players){
+		for(let elem of players){
 			elem.onclick = function(event){
 				let target = event.target;
 				console.log(target.getBoundingClientRect(), target.id,target.className);
@@ -73,7 +73,7 @@ function initPlayerBoardEvents(){
 }
 function initObstacleBoardEvents(){
 	let obstacles = document.querySelectorAll('#obstacleBoard td');
-		for(elem of obstacles){
+		for(let elem of obstacles){
 			elem.onclick = function(event){
 				let target = event.target;
 				console.log(target.getBoundingClientRect(), target.id,target.className);
