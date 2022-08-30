@@ -8,6 +8,15 @@ export class Player {
   }
 
   pick(color, deck) {
+    const $remainText = document.querySelector("#" + color + "RemainText");
+    const remain = $remainText.textContent.split(" ")[2];
+
+    if (remain > 0)
+      $remainText.textContent = $remainText.textContent.replace(
+        remain,
+        remain - 1
+      );
+
     if (color === "white" && deck.whiteCards.length >= 1) {
       this.cards.push(deck.whiteCards.pop("white"));
       this.LastPickedCard = this.cards[this.cards.length - 1];
