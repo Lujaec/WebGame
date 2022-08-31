@@ -31,15 +31,7 @@ export class Board{
 		testF(){
 			console.log('가능?');
 		}
-		initPlayerBoardUI(player1,player2){
-			console.log(player1);
-			let elem1=document.querySelector(`#p${player1.getPos().row}${player1.getPos().col}`); //이거 p84??
-			let elem2=document.querySelector(`#p${player2.getPos().row}${player2.getPos().col}`); //이거 p84??
-			
-			console.log(elem1);
-			elem1.innerHTML = '<img src="./images/black1.png" alt="black"></img>';
-			elem2.innerHTML = '<img src="./images/white1.png" alt="white"></img>';
-		}
+		
 }
 
 export function initBoardEvents(){
@@ -47,7 +39,6 @@ export function initBoardEvents(){
 	for(let elem of tds){
 		elem.onclick = function(event){
 			let target = event.target;
-			//console.log(target.getBoundingClientRect(), target.dataset.row,target.className);	
 			console.log(`${target.dataset.row}, ${target.dataset.col} ${target.className} ${target.id}`);
 		}
 	}

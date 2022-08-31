@@ -43,17 +43,30 @@ function isPlayerBoardUnit(r,c){
 function isObstacleBoardUnit(r,c){
 	return (r%2==1 && c%2==1); //둘다 홀수이면 obstacleUnit
 }
+
+
 export function createObstacleInfo(id){
 	let elem=document.createElement('div');
-	elem.id=id;
-	elem.className='info';
+	//elem.id=id;
+	elem.className='obstacleInfo';
 	document.querySelector('#container').append(elem);
 	for(let i=0;i<10;i++){
-		elem.append(createObstacleElem(i));
+		elem.append(createObstacleElem(i,id));
 	}
 }
-function createObstacleElem(idx){
-	let elem=document.createElement('div');
+function createObstacleElem(idx,id){
+	let elem=document.createElement('img');
 	elem.className='obstacleUnit';
+	elem.className=id+'Unit';
+	elem.src="./images/obstacle.png";
+	elem.alt='obs';
 	return elem;
+}
+export function createPlayerInfo(id){
+	let elem=document.createElement('div');
+	//elem.id=id;
+	elem.className='playerInfo';
+	document.querySelector('#container').append(elem);
+	//elem.innerHTML = '<img src="./images/white1.png" alt="white"></img>';
+	elem.innerText=id;
 }

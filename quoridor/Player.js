@@ -9,6 +9,7 @@ export class Player {
             row : row,
             col : col,
         }
+        this._elem=null;
     }   
     getName() { return this._name; }
     setName() {} //굳이 필요없는대ㅔ?
@@ -24,4 +25,15 @@ export class Player {
         this._pos.row = r, this._pos.col = c;
     }
 
+    getElem() { return this._elem; }
+    setElem(pos){
+        this._elem = document.querySelector(`#p${pos.row}${pos.col}`); //이거 p84??
+    }
+
+}
+export function clickPlayer(event){
+    console.log(event.type);
+    console.log(this);
+    console.log(event.currentTarget);
+    //this.
 }
