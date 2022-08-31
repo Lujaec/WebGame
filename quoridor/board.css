@@ -1,48 +1,44 @@
-#playerBoard {
+#board {
   border: 1px solid black;
-	border-spacing: 20px;
-  box-sizing: border-box;
-  top: 21px;
-  left: 21px;
-  position: relative;
-  z-index: 23;
-  pointer-events: none;
-  
+  border-collapse: collapse;
+  margin: auto;
 }
-#playerBoard td {
+td {
+  padding: 0;
+  line-height: 0;
+}
+td.playerBoardUnit {
+  border: 1px solid black;
   width: 50px;
 	height: 50px;
-  border: 1px solid black;
   box-sizing: border-box;
-  pointer-events: all;
-  line-height: 0;
-  padding: 0;
-}
-td img {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-#obstacleBoard {
-  
-  border-spacing: 50px;
-  left: 42px;
-  top: -610px;
-  position: relative;
-  width: auto;
   
 }
-#obstacleBoard td {
+td.obstacleBoardUnit {
+  border: 1px solid red;
   width: 20px;
 	height: 20px;
-  border: 1px solid red;
   box-sizing: border-box;
-  text-overflow: ellipsis;
-  font-size: 1px;
 }
+
+td img {
+  width: 100%;
+}
+
 .info {
-  width: 652px;
+  width: 700px;
   height: 200px;
   border: 1px solid blue;
+  box-sizing: border-box;
+  margin: auto;
+  /** 플렉서블 박스  */
+  display: flex;
+  flex-direction: row;
+}
+.info div {
+  border: 1px solid green;
+  width: 15px;
+  height: 100px;
+  margin: auto;
   box-sizing: border-box;
 }
