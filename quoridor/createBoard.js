@@ -13,7 +13,7 @@ function createTable(board,size,className){
 		}
 		board.append(boardRow);
 	}
-	document.body.append(board);
+	document.querySelector('#container').append(board);
 }
 function createBoardUnit(row, col, className) {
 	let elem=document.createElement('td');
@@ -23,4 +23,11 @@ function createBoardUnit(row, col, className) {
 	if(className == 'playerBoardUnit'){ elem.innerHTML="("+row+", "+col+")"; }
 	elem.className=className;
 	return elem;
+}
+
+export function createObstacleInfo(id){
+	let elem=document.createElement('div');
+	elem.id=id;
+	elem.className='info';
+	document.querySelector('#container').append(elem);
 }

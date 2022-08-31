@@ -7,6 +7,7 @@
   position: relative;
   z-index: 23;
   pointer-events: none;
+  
 }
 #playerBoard td {
   width: 50px;
@@ -28,6 +29,7 @@ td img {
   left: 42px;
   top: -610px;
   position: relative;
+  width: auto;
   
 }
 #obstacleBoard td {
@@ -37,4 +39,10 @@ td img {
   box-sizing: border-box;
   text-overflow: ellipsis;
   font-size: 1px;
+}
+.info {
+  width: 652px;
+  height: 200px;
+  border: 1px solid blue;
+  box-sizing: border-box;
 }
