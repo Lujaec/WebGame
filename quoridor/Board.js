@@ -16,8 +16,7 @@ export class Board{
 			this._playerBoardArr[from.row][from.col]=0;
 			this._playerBoardArr[to.row][to.col]=who;
 			
-			this.testF();
-			this._nowTurn='player1';
+			//this._nowTurn='player1';
 		}
 		setObstacleBoardArr(){
 
@@ -28,9 +27,7 @@ export class Board{
 		printObstacleBoardArr(){
 			console.table(this._obstacleBoardArr);
 		}
-		testF(){
-			console.log('가능?');
-		}
+	
 		
 }
 

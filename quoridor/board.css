@@ -3,6 +3,9 @@
   border-collapse: collapse;
   margin: auto;
 }
+.imgPlayer {
+  cursor: pointer;
+}
 td {
   padding: 0;
   line-height: 0;
@@ -19,10 +22,6 @@ td.obstacleBoardUnit {
   width: 20px;
 	height: 20px;
   box-sizing: border-box;
-}
-
-td img {
-  width: 100%;
 }
 
 .obstacleInfo {
@@ -44,8 +43,6 @@ td img {
 }
 .playerInfo {
   width: 611px;
-  
-  
   box-sizing: border-box;
   margin: auto;
   font-size: 3em;

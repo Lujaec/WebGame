@@ -1,4 +1,4 @@
-import {Player, clickPlayer} from "./Player.js";
+import {Player, mousedownPlayer} from "./Player.js";
 import {Board} from "./Board.js";
 
 
@@ -16,23 +16,23 @@ export class GameManager {
   getNowTurn(){ return this._nowTurn;}
 
   gameStart(){
-    moveTo(player1.getPos(),player1.getPos(),player1); //playerBoard에 올려줌
-    moveTo(player2.getPos(),player2.getPos(),player2); //playerBoard에 올려줌
-    player1.setElem(player1.getPos());
-    player2.setElem(player2.getPos());
-    player1.getElem().innerHTML = '<img src="./images/black.png" alt="black"></img>';
-    player2.getElem().innerHTML = '<img src="./images/white.png" alt="white"></img>';
-    player1.getElem().addEventListener('click',clickPlayer);
-    player2.getElem().addEventListener('click',clickPlayer);
+    board.setPlayerBoardArr(player1.getPos(),player1.getPos(),player1); //playerBoard에 올려줌
+    board.setPlayerBoardArr(player2.getPos(),player2.getPos(),player2); //playerBoard에 올려줌
+    player1.initElem('black'); //elem을 토큰이미지요소로
+    player2.initElem('white');
+    //console.log(player1.getId());
+    document.querySelector(player1.getId()).append(player1.getElem());
+    document.querySelector(player2.getId()).append(player2.getElem());
     console.log(player1.getElem());
     
-    //this.setNowTurn(player1);
-
-
-
+    
+    this.changeTurn(player1,player1);
   }
   changeTurn(from,to){
-    
+    this.setNowTurn(to);
+    //from.getElem().removeEventListener('click',clickPlayer); //리무브말고 비활성화
+
+    to.getElem().addEventListener('mousedown',mousedownPlayer);
   }
 }
 
