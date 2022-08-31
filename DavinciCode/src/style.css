@@ -34,11 +34,11 @@ body {
   flex-flow: row wrap;
   justify-content: space-evenly;
   align-items: center;
-  margin: 120px 75px;
+  margin: 80px 75px;
 }
 
 .container.deck {
-  margin: 100px 100px;
+  margin: 90px 100px;
   padding: 0px 225px;
 }
 
@@ -53,4 +53,43 @@ body {
 
 .deck div:hover {
   transform: scale(1.2);
+}
+
+@keyframes example {
+  0% {
+    left: -40vw;
+    top: -50px;
+  }
+  40% {
+    left: 40vw;
+    top: -50px;
+  }
+  50% {
+    left: 40vw;
+    top: 50px;
+  }
+  90% {
+    left: -40vw;
+    top: 50px;
+  }
+  100% {
+    left: -40vw;
+    top: -50px;
+  }
+}
+
+#jokerSelect > img {
+  border: 2px solid;
+  position: relative;
+  animation-name: example;
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+}
+
+.trans {
+  transition: 0.3s ease-in-out;
+}
+
+.trans:hover {
+  transform: scale(1.8);
 }

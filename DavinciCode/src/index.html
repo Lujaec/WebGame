@@ -11,6 +11,10 @@
       rel="stylesheet"
     />
     <script type="module" src="./gameManager.js" defer></script>
+    <script
+      src="https://kit.fontawesome.com/c4643f98b3.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <header class="top">
@@ -19,15 +23,16 @@
     <section class="board-game">
       <div class="computer-cards container"></div>
       <div class="deck container">
-        <div>
+        <div id="whiteRemain">
           <img id="whiteRemainImg" src="../images/wBack.jpg" alt="dawdwa" />
           <span id="whiteRemainText">Remainer : 10</span>
         </div>
-        <div>
+        <div id="blackRemain">
           <img id="blackRemainImg" src="../images/bBack.jpg" alt="dawdwa" />
           <span id="blackRemainText">Remainer : 10</span>
         </div>
       </div>
+      <div id="jokerSelect" class="container"></div>
       <div class="player-cards container"></div>
     </section>
   </body>
