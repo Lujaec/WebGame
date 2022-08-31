@@ -26,7 +26,6 @@ export class Player {
     getElem() { return this._elem; }
     setElem(elem) { this._elem=elem; }
 
-    getId(){ return '#p'+this._pos.row + this._pos.col;}
     initElem(color){
         let imgElem=document.createElement('img');
         imgElem.src="./images/"+color+".png";
@@ -34,31 +33,29 @@ export class Player {
         imgElem.className='imgPlayer';
         this.setElem(imgElem);
     }
+    getId(){ return '#p'+this._pos.row + this._pos.col;}
     /* setElem(pos){
         this._elem = document.querySelector(`#p${pos.row}${pos.col}`); //이거 p84??
     } */
 
 }
-export function mousedownPlayer(event){
-    let elem=this;
-    elem.ondragstart = function() { return false; }; //여기잇어도 대?
-    console.log(event.type);
-    console.log(elem);
 
-    elem.style.position = 'absolute';
-    elem.style.zIndex=987;
-    document.body.append(elem);
-    function moveAt(pageX, pageY) {
-        elem.style.left = pageX - elem.offsetWidth / 2 + 'px';
-        elem.style.top = pageY - elem.offsetHeight / 2 + 'px';
-    }
-    function onMouseMove(event) {
-        moveAt(event.pageX, event.pageY);
-    }
-    moveAt(event.pageX, event.pageY);
-    document.addEventListener('mousemove', onMouseMove);
-    elem.onmouseup = function() {
-        document.removeEventListener('mousemove', onMouseMove);
-        elem.onmouseup = null;
-    };
+export function dragenterPlayer(event){
+    this.style.backgroundColor ='yellow';
+}
+export function dragleavePlayer(event){
+    this.style.backgroundColor ='';
+}
+export function dragstartPlayer(event){
+    console.log(this.id + ' dragstart!')
+    event.dataTransfer.setData('text',event.target.id);
+}
+export function dragoverPlayer(event){
+    event.preventDefault(); 
+}
+export function dropPlayer(event){
+    event.preventDefault();
+    console.log(this.id + ' drop!');
+    let data=event.dataTransfer.getData('text');
+    event.target.append(document.getElementById(data));
 }

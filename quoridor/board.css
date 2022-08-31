@@ -1,14 +1,22 @@
+
 #board {
   border: 1px solid black;
   border-collapse: collapse;
   margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
 }
 .imgPlayer {
   cursor: pointer;
 }
 td {
+  
   padding: 0;
   line-height: 0;
+}
+td img {
+  max-width: 100%;
 }
 td.playerBoardUnit {
   border: 1px solid black;

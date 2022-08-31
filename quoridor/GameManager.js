@@ -1,4 +1,4 @@
-import {Player, mousedownPlayer} from "./Player.js";
+import {Player, dragenterPlayer, dropPlayer, dragoverPlayer, dragleavePlayer, dragstartPlayer} from "./Player.js";
 import {Board} from "./Board.js";
 
 
@@ -25,14 +25,24 @@ export class GameManager {
     document.querySelector(player2.getId()).append(player2.getElem());
     console.log(player1.getElem());
     
-    
-    this.changeTurn(player1,player1);
+    let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
+    for(let elem of playerBoardUnits){
+      elem.addEventListener('dragenter',dragenterPlayer);
+      elem.addEventListener('dragleave',dragleavePlayer);
+      elem.addEventListener('dragstart',dragstartPlayer);
+      elem.addEventListener('dragover',dragoverPlayer)
+      elem.addEventListener('drop',dropPlayer);
+    }
+
+    //this.changeTurn(player1,player1);
   }
   changeTurn(from,to){
     this.setNowTurn(to);
     //from.getElem().removeEventListener('click',clickPlayer); //리무브말고 비활성화
 
-    to.getElem().addEventListener('mousedown',mousedownPlayer);
+    //to.getElem().addEventListener('mousedown',mousedownPlayer);
+    to.getElem().addEventListener('dragenter',dragenterPlayer);
+
   }
 }
 
