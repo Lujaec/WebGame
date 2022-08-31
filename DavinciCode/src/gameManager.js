@@ -2,7 +2,7 @@ import { Player } from "./player.js";
 import { Computer } from "./computer.js";
 import { Deck } from "./deck.js";
 
-class GameManager {
+export class GameManager {
   constructor() {
     this.player = new Player();
     this.computer = new Computer();
@@ -15,7 +15,7 @@ class GameManager {
     }
 
     for (let i = 0; i < this.computer.cards.length; ++i) {
-      if (this.computer.cards[i].number === 13)
+      if (this.computer.cards[i].number === 12)
         this.computer.selectBestJockerPos(i);
     }
   }
@@ -29,7 +29,7 @@ class GameManager {
     }
   }
 
-  sortCards(cards) {
+  static sortCards(cards) {
     cards.sort(function (a, b) {
       const diff = a.number - b.number;
 
@@ -40,9 +40,17 @@ class GameManager {
     });
   }
 
+  removeIcon() {
+    const $playerCards = document.querySelector(".player-cards");
+
+    for (const item of $playerCards.children) {
+      if (item.nodeName === "I") $playerCards.removeChild(item);
+    }
+  }
+
   renderCards() {
-    this.sortCards(this.player.cards);
-    this.sortCards(this.computer.cards);
+    GameManager.sortCards(this.player.cards);
+    GameManager.sortCards(this.computer.cards);
 
     const strs = ["player-cards", "computer-cards"];
     const obj = [this.player, this.computer];
@@ -57,9 +65,9 @@ class GameManager {
         let number = obj[i].cards[j].number;
 
         if (obj[i] === this.computer) number = "back";
+        else if (!Number.isInteger(number)) number = 12;
 
         img.src = "../images/" + color[0] + number + ".jpg";
-
         img = img.nextElementSibling;
       }
     }
@@ -95,6 +103,14 @@ class GameManager {
 
         if (this.player.cards.length === 4) {
           $deckContainer.removeEventListener("click", arrowF);
+
+          const pCardsArr = this.player.cards;
+          for (let i = 0; i < pCardsArr.length; ++i) {
+            if (pCardsArr[i].number === 12) {
+              console.log(this);
+              this.player.choiceJokerPos(i, this);
+            }
+          }
         }
       })
     );
