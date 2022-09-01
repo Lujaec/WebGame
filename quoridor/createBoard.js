@@ -47,7 +47,7 @@ function isObstacleBoardUnit(r,c){
 
 export function createObstacleInfo(id){
 	let elem=document.createElement('div');
-	//elem.id=id;
+	elem.id=id+'obstacleInfo';
 	elem.className='obstacleInfo';
 	document.querySelector('#container').append(elem);
 	for(let i=0;i<10;i++){
@@ -57,14 +57,15 @@ export function createObstacleInfo(id){
 function createObstacleElem(idx,id){
 	let elem=document.createElement('img');
 	elem.className='obstacleUnit';
-	elem.className=id+'Unit';
+	elem.className+=" "+id+'Obstacle';
+	elem.id=id+'ObstacleUnit'+idx;
 	elem.src="./images/obstacle.png";
 	elem.alt='obs';
 	return elem;
 }
 export function createPlayerInfo(id){
 	let elem=document.createElement('div');
-	//elem.id=id;
+	elem.id=id+'info';
 	elem.className='playerInfo';
 	document.querySelector('#container').append(elem);
 	//elem.innerHTML = '<img src="./images/white1.png" alt="white"></img>';

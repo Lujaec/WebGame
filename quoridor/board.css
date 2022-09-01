@@ -5,15 +5,16 @@
   margin: auto;
   margin-top: 10px;
   margin-bottom: 10px;
-  
+  position: relative; /**td의 부모속성*/
 }
-.imgPlayer {
+.imgPlayer, .imgObstacle {
   cursor: pointer;
 }
+
 td {
-  
   padding: 0;
   line-height: 0;
+
 }
 td img {
   max-width: 100%;
@@ -30,8 +31,11 @@ td.obstacleBoardUnit {
   width: 20px;
 	height: 20px;
   box-sizing: border-box;
+  
 }
-
+td.obstacleBoardUnit img{
+  position: absolute;
+}
 .obstacleInfo {
   width: 611px;
   height: 150px;

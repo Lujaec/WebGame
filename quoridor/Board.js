@@ -16,7 +16,7 @@ export class Board{
 			this._playerBoardArr[from.row][from.col]=0;
 			this._playerBoardArr[to.row][to.col]=who;
 			
-			//this._nowTurn='player1';
+			//b this._nowTurn='player1';
 		}
 		setObstacleBoardArr(){
 

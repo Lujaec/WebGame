@@ -40,22 +40,3 @@ export class Player {
 
 }
 
-export function dragenterPlayer(event){
-    this.style.backgroundColor ='yellow';
-}
-export function dragleavePlayer(event){
-    this.style.backgroundColor ='';
-}
-export function dragstartPlayer(event){
-    console.log(this.id + ' dragstart!')
-    event.dataTransfer.setData('text',event.target.id);
-}
-export function dragoverPlayer(event){
-    event.preventDefault(); 
-}
-export function dropPlayer(event){
-    event.preventDefault();
-    console.log(this.id + ' drop!');
-    let data=event.dataTransfer.getData('text');
-    event.target.append(document.getElementById(data));
-}
