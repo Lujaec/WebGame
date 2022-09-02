@@ -40,3 +40,14 @@ export function initBoardEvents(){
 		}
 	}
 }
+export function positionObstacleOnBoard(elem, row, col){
+	console.log(elem);
+	if(elem.dataset.dir=='vertical'){
+  	elem.style.top=row * 70 + 'px';
+		elem.style.left=col * 70 + 50 + 'px';
+	}
+	else {
+		elem.style.top=row * 70 + 50 + 'px';
+		elem.style.left=col * 70 + 'px';
+	}
+}

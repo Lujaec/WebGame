@@ -1,5 +1,5 @@
 import {Player} from "./Player.js";
-import {Board, initBoardEvents} from "./Board.js";
+import {Board, positionObstacleOnBoard} from "./Board.js";
 //* as events from "./dragEvents.js";
 
 
@@ -42,29 +42,29 @@ export function changeTurn(from,to){
   document.getElementById(to.getName()+'info').style.backgroundColor='red'; //현재턴표시
   console.log('nowTurn : '+getNowTurn().getName());
 
-  setUndraggable(from.getElem());
-  setdraggable(to.getElem());
+  setDisabled(from.getElem());
+  setAbled(to.getElem());
 
 
   let fromObstacles=document.querySelectorAll('.'+from.getName()+'Obstacle');
   for(let elem of fromObstacles){
-    setUndraggable(elem);
+    setDisabled(elem);
   }
   let toObstacles=document.querySelectorAll('.'+to.getName()+'Obstacle');
   for(let elem of toObstacles){
-    setdraggable(elem);
+    if(elem.dataset.isPositioned=='true') { continue; }
+    setAbled(elem);
   }
-  function setUndraggable(elem){
-    elem.style.WebkitUserDrag = 'none';
-    elem.style.cursor ='default';
-  }
-  function setdraggable(elem){
-    elem.style.WebkitUserDrag = 'auto';
-    elem.style.cursor ='pointer';
-  }
+  
 }
 
-
+function setDisabled(elem){
+  elem.style.pointerEvents = 'none';
+}
+function setAbled(elem){
+  elem.style.cursor ='pointer';
+  elem.style.pointerEvents = 'auto';
+}
 
 
 
@@ -78,10 +78,12 @@ function initPlayerEvents(){
 }
 function initObstacleEvents(){
   let obstacleUnits = document.querySelectorAll('.obstacleUnit');
-  console.log(obstacleUnits);
+  //console.log(obstacleUnits);
   for(let elem of obstacleUnits){
     elem.addEventListener('dragstart',dragstartObstacle); //분리?
     elem.addEventListener('dragend',dragendObstacle); //분리?
+    elem.addEventListener('click',clickObstacle); //분리?
+
   }
 }
 function moveTo(from, to, who){
@@ -97,14 +99,12 @@ export function dragleavePlayer(event){
   this.style.backgroundColor ='';
 }
 export function dragstartPlayer(event){ //플레이어를 드래그하면 이벤트를 생기게??
-  console.log(this);
   console.log(this.id + ' dragstart!')
   event.dataTransfer.setData('text',event.target.id);
   let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
   for(let elem of playerBoardUnits){
     elem.addEventListener('dragenter',dragenterPlayer);
     elem.addEventListener('dragleave',dragleavePlayer);
-    //elem.addEventListener('dragstart',dragstartPlayer); //분리?
     elem.addEventListener('dragover',dragoverPlayer);
     elem.addEventListener('drop',dropPlayer);
   }
@@ -115,7 +115,6 @@ export function dragendPlayer(event){ //플레이어를 드래그끝내면
   for(let elem of playerBoardUnits){
     elem.removeEventListener('dragenter',dragenterPlayer);
     elem.removeEventListener('dragleave',dragleavePlayer);
-    //elem.addEventListener('dragstart',dragstartPlayer); //분리?
     elem.removeEventListener('dragover',dragoverPlayer);
     elem.removeEventListener('drop',dropPlayer);
   }
@@ -127,9 +126,7 @@ export function dropPlayer(event){
   event.preventDefault();
   console.log(this.id + ' drop!');
   let data=event.dataTransfer.getData('text');
-  console.log('data: '+data);
   event.target.append(document.getElementById(data));
-
   changeTurn(getNowTurn(),getNextTurn());
 }
 ///////////////////////////////////////////////////////////
@@ -140,14 +137,12 @@ export function dragleaveObstacle(event){
   this.style.backgroundColor ='';
 }
 export function dragstartObstacle(event){
-  console.log(this);
   console.log(this.id + ' dragstart!')
   event.dataTransfer.setData('text',event.target.id);
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
     elem.addEventListener('dragenter',dragenterObstacle);
     elem.addEventListener('dragleave',dragleaveObstacle);
-    //elem.addEventListener('dragstart',dragstartPlayer); //분리?
     elem.addEventListener('dragover',dragoverObstacle);
     elem.addEventListener('drop',dropObstacle);
   }
@@ -158,7 +153,6 @@ export function dragendObstacle(event){ //플레이어를 드래그끝내면
   for(let elem of obstacleBoardUnits){
     elem.removeEventListener('dragenter',dragenterObstacle);
     elem.removeEventListener('dragleave',dragleaveObstacle);
-    //elem.addEventListener('dragstart',dragstartPlayer); //분리?
     elem.removeEventListener('dragover',dragoverObstacle);
     elem.removeEventListener('drop',dropObstacle);
   }
@@ -166,17 +160,27 @@ export function dragendObstacle(event){ //플레이어를 드래그끝내면
 export function dragoverObstacle(event){
   event.preventDefault(); 
 }
-export function dropObstacle(event){ //이 이벤트 발생하면 cahgeTurn 해야하느데................
+export function dropObstacle(event){ 
   event.preventDefault();
   console.log(this.id + ' drop!');
   let data=event.dataTransfer.getData('text');
-  console.log('data : '+data);
-  event.target.append(document.getElementById(data));
-  document.getElementById(data).style.left=event.target.dataset.col * 70 + 50 + 'px';
-  document.getElementById(data).style.top=event.target.dataset.row * 70 + 'px';
-
-  console.log(document.getElementById(data));
-  
-
+  let imgElem=document.getElementById(data);
+  event.target.append(imgElem);
+  positionObstacleOnBoard(imgElem,event.target.dataset.row,event.target.dataset.col); //img요소, row, col
+  imgElem.dataset.isPositioned='true';
+  setDisabled(imgElem);
   changeTurn(getNowTurn(),getNextTurn());
+}
+export function clickObstacle(event){
+  console.log('clikck!!');
+  console.log(event.target.src);
+  if(event.target.dataset.dir=='vertical'){
+    event.target.src="./images/obstacleHorizontal.png";
+    event.target.dataset.dir='horizontal';
+  }
+  else {
+    event.target.src="./images/obstacleVertical.png";
+    event.target.dataset.dir='vertical';
+  }
+
 }

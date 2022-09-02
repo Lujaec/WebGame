@@ -26,7 +26,7 @@ export class Player {
     getElem() { return this._elem; }
     setElem(elem) { this._elem=elem; }
 
-    initElem(color){
+    initElem(color){ //crateboard로
         let imgElem=document.createElement('img');
         imgElem.src="./images/"+color+".png";
         imgElem.id='img'+color;
