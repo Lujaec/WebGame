@@ -1,40 +1,62 @@
-#playerBoard {
+
+#board {
   border: 1px solid black;
-	border-spacing: 20px;
-  box-sizing: border-box;
-  top: 21px;
-  left: 21px;
-  position: relative;
-  z-index: 23;
-  pointer-events: none;
+  border-collapse: collapse;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: relative; /**td의 부모속성*/
 }
-#playerBoard td {
-  width: 50px;
-	height: 50px;
-  border: 1px solid black;
-  box-sizing: border-box;
-  pointer-events: all;
-  line-height: 0;
+.imgPlayer, .imgObstacle {
+  cursor: pointer;
+}
+
+td {
   padding: 0;
+  line-height: 0;
+
 }
 td img {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+  max-width: 100%;
 }
-#obstacleBoard {
-  
-  border-spacing: 50px;
-  left: 42px;
-  top: -610px;
-  position: relative;
+td.playerBoardUnit {
+  border: 1px solid black;
+  width: 50px;
+	height: 50px;
+  box-sizing: border-box;
   
 }
-#obstacleBoard td {
+td.obstacleBoardUnit {
+  border: 1px solid red;
   width: 20px;
 	height: 20px;
-  border: 1px solid red;
   box-sizing: border-box;
-  text-overflow: ellipsis;
-  font-size: 1px;
+  
+}
+td.obstacleBoardUnit img{
+  position: absolute;
+}
+.obstacleInfo {
+  width: 611px;
+  height: 150px;
+  border: 1px solid blue;
+  box-sizing: border-box;
+  margin: auto;
+  /** 플렉서블 박스  */
+  display: flex;
+  flex-direction: row;
+}
+.obstacleInfo img {
+  border: 1px solid brown;
+  width: 15px;
+  height: 100px;
+  margin: auto;
+  box-sizing: border-box;
+}
+.playerInfo {
+  width: 611px;
+  box-sizing: border-box;
+  margin: auto;
+  font-size: 3em;
+  text-align: center;
 }

@@ -9,6 +9,7 @@ export class Player {
             row : row,
             col : col,
         }
+        this._elem=null;
     }   
     getName() { return this._name; }
     setName() {} //굳이 필요없는대ㅔ?
@@ -20,8 +21,22 @@ export class Player {
     setIsMyTurn(value_Bool){ this._isMyTurn = value_Bool;}
 
     getPos() { return this._pos; }
-    setPos(r,c) { 
-        this._pos.row = r, this._pos.col = c;
+    setPos(r,c) { this._pos.row = r, this._pos.col = c; }
+
+    getElem() { return this._elem; }
+    setElem(elem) { this._elem=elem; }
+
+    initElem(color){
+        let imgElem=document.createElement('img');
+        imgElem.src="./images/"+color+".png";
+        imgElem.id='img'+color;
+        imgElem.className='imgPlayer';
+        this.setElem(imgElem);
     }
+    getId(){ return '#p'+this._pos.row + this._pos.col;}
+    /* setElem(pos){
+        this._elem = document.querySelector(`#p${pos.row}${pos.col}`); //이거 p84??
+    } */
 
 }
+
