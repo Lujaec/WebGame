@@ -40,7 +40,7 @@ export class GameManager {
     });
   }
 
-  removeIcon() {
+  static removeIcon() {
     const $playerCards = document.querySelector(".player-cards");
 
     for (const item of $playerCards.children) {
@@ -48,23 +48,24 @@ export class GameManager {
     }
   }
 
-  renderCards() {
-    GameManager.sortCards(this.player.cards);
-    GameManager.sortCards(this.computer.cards);
+  static renderCards(pCards, cCards) {
+    if (pCards) GameManager.sortCards(pCards);
+    if (cCards) GameManager.sortCards(cCards);
 
     const strs = ["player-cards", "computer-cards"];
-    const obj = [this.player, this.computer];
+    const obj = [pCards, cCards];
 
     for (let i = 0; i < 2; ++i) {
+      if (obj[i] == null) continue;
       let img = document.querySelector("." + strs[i]).firstElementChild;
 
       if (img === null) img = document.createElement("img");
 
-      for (let j = 0; j < obj[i].cards.length; ++j) {
-        const color = obj[i].cards[j].color;
-        let number = obj[i].cards[j].number;
+      for (let j = 0; j < obj[i].length; ++j) {
+        const color = obj[i][j].color;
+        let number = obj[i][j].number;
 
-        if (obj[i] === this.computer) number = "back";
+        if (obj[i] === cCards) number = "back";
         else if (!Number.isInteger(number)) number = 12;
 
         img.src = "../images/" + color[0] + number + ".jpg";
@@ -83,7 +84,7 @@ export class GameManager {
       $computerCards.appendChild(img);
     }
 
-    this.renderCards();
+    GameManager.renderCards(this.player.cards, this.computer.cards);
 
     $deckContainer.addEventListener(
       "click",
@@ -98,7 +99,7 @@ export class GameManager {
 
           const $img = document.createElement("img");
           $playerCards.appendChild($img);
-          this.renderCards();
+          GameManager.renderCards(this.player.cards, this.computer.cards);
         }
 
         if (this.player.cards.length === 4) {
@@ -107,16 +108,14 @@ export class GameManager {
           const pCardsArr = this.player.cards;
           for (let i = 0; i < pCardsArr.length; ++i) {
             if (pCardsArr[i].number === 12) {
-              console.log(this);
               this.player.choiceJokerPos(i, this);
+              break;
             }
           }
         }
       })
     );
   }
-
-  gameStart() {}
 }
 
 const gm = new GameManager();
