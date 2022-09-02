@@ -55,7 +55,11 @@ export function changeTurn(from,to){
     if(elem.dataset.isPositioned=='true') { continue; }
     setAbled(elem);
   }
-  
+  board.printPlayerBoardArr();
+  board.printObstacleBoardArr();
+  console.log(player1);
+  console.log(player2);
+
 }
 
 function setDisabled(elem){
@@ -89,7 +93,7 @@ function initObstacleEvents(){
 function moveTo(from, to, who){
   who.setPos(to.row,to.col);
   board.setPlayerBoardArr(from,to,who);
-  board.printPlayerBoardArr();
+  //board.printPlayerBoardArr();
 }
 
 export function dragenterPlayer(event){
@@ -98,9 +102,12 @@ export function dragenterPlayer(event){
 export function dragleavePlayer(event){
   this.style.backgroundColor ='';
 }
-export function dragstartPlayer(event){ //플레이어를 드래그하면 이벤트를 생기게??
-  console.log(this.id + ' dragstart!')
-  event.dataTransfer.setData('text',event.target.id);
+export function dragstartPlayer(event){ //플레이어를 드래그하면 이벤트를 생기게?? //여기에 이벤트4개 넣어랴?
+
+  //console.log(this.id + ' dragstart!')
+  event.dataTransfer.setData('imgId',event.target.id);
+  event.dataTransfer.setData('beforeRow',getNowTurn().getPos().row);
+  event.dataTransfer.setData('beforeCol',getNowTurn().getPos().col);
   let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
   for(let elem of playerBoardUnits){
     elem.addEventListener('dragenter',dragenterPlayer);
@@ -110,7 +117,7 @@ export function dragstartPlayer(event){ //플레이어를 드래그하면 이벤
   }
 }
 export function dragendPlayer(event){ //플레이어를 드래그끝내면
-  console.log(this.id + ' dragend!')
+  //console.log(this.id + ' dragend!')
   let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
   for(let elem of playerBoardUnits){
     elem.removeEventListener('dragenter',dragenterPlayer);
@@ -124,10 +131,25 @@ export function dragoverPlayer(event){
 }
 export function dropPlayer(event){
   event.preventDefault();
-  console.log(this.id + ' drop!');
-  let data=event.dataTransfer.getData('text');
-  event.target.append(document.getElementById(data));
+  let data=event.dataTransfer.getData('imgId'); //옮길 이미지요소의 id
+  let beforeRow=event.dataTransfer.getData('beforeRow');
+  let beforeCol=event.dataTransfer.getData('beforeCol');
+  let beforePos = { //플레이어의 드롭 전 위치
+    row : beforeRow,
+    col : beforeCol,
+  }
+  let afterPos = {  //플레이어의 드롭 후 위치
+    row : this.dataset.row,
+    col : this.dataset.col,
+  }
+  let imgElem=document.getElementById(data);  //옮길 이미지 요소
+  event.target.append(imgElem);  //목적지에 추가
+  moveTo(beforePos, afterPos, getNowTurn());
+  //board.setPlayerBoardArr(beforePos, afterPos, getNowTurn()); //보드 위치 업데이트
+  //getNowTurn().setPos(this.dataset.row,this.dataset.col); //플레이어 정보 업데이트
+
   changeTurn(getNowTurn(),getNextTurn());
+ 
 }
 ///////////////////////////////////////////////////////////
 export function dragenterObstacle(event){
@@ -137,8 +159,8 @@ export function dragleaveObstacle(event){
   this.style.backgroundColor ='';
 }
 export function dragstartObstacle(event){
-  console.log(this.id + ' dragstart!')
-  event.dataTransfer.setData('text',event.target.id);
+  //console.log(this.id + ' dragstart!')
+  event.dataTransfer.setData('imgId',event.target.id);
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
     elem.addEventListener('dragenter',dragenterObstacle);
@@ -148,7 +170,7 @@ export function dragstartObstacle(event){
   }
 }
 export function dragendObstacle(event){ //플레이어를 드래그끝내면
-  console.log(this.id + ' dragend!')
+  //console.log(this.id + ' dragend!')
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
     elem.removeEventListener('dragenter',dragenterObstacle);
@@ -162,13 +184,17 @@ export function dragoverObstacle(event){
 }
 export function dropObstacle(event){ 
   event.preventDefault();
-  console.log(this.id + ' drop!');
-  let data=event.dataTransfer.getData('text');
+  //console.log(this.id + ' drop!');
+  let data=event.dataTransfer.getData('imgId');
   let imgElem=document.getElementById(data);
+  let row = event.target.dataset.row;
+  let col = event.target.dataset.col;
   event.target.append(imgElem);
-  positionObstacleOnBoard(imgElem,event.target.dataset.row,event.target.dataset.col); //img요소, row, col
+  positionObstacleOnBoard(imgElem,row, col); //img요소, row, col //보드에 맞는 css 표시
   imgElem.dataset.isPositioned='true';
   setDisabled(imgElem);
+  console.log(imgElem);
+  board.setObstacleBoardArr(row,col,imgElem.dataset.dir); //obstacle 보드에 장애물 정보 추가
   changeTurn(getNowTurn(),getNextTurn());
 }
 export function clickObstacle(event){
