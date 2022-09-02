@@ -42,7 +42,9 @@ export class Player {
     $jokerSelect.appendChild(jockerImg);
 
     let $img = $playerCards.firstElementChild;
-    for (let i = 0; i < idx; ++i) {
+    console.log(this.cards.length);
+    for (let i = 0; i < this.cards.length; ++i) {
+      if (i === idx) continue;
       $imgs.push($img);
       $img = $img.nextElementSibling;
     }
@@ -60,6 +62,7 @@ export class Player {
         }
       }
 
+      console.log(idx);
       if (pos == 0) {
         this.cards[idx].number = this.cards[0].number - 0.25;
       } else if (pos == $playerCards.children.length - 1) {
@@ -69,13 +72,19 @@ export class Player {
         this.cards[idx].number = this.cards[pos / 2].number - 0.25;
       }
 
-      console.log(this.cards);
-
       $playerCards.appendChild(jockerImg);
 
-      gm.removeIcon();
-      gm.renderCards();
-      GameManager.sortCards(this.cards);
+      GameManager.removeIcon();
+      GameManager.renderCards(this.cards, null);
+
+      for (let i = idx; i < this.cards.length; ++i) {
+        if (this.cards[i].number === 12) {
+          $playerCards.removeEventListener("click", handle);
+          this.choiceJokerPos(i, this);
+        }
+      }
+
+      if (this.cards.length === 4);
     };
 
     $playerCards.addEventListener("click", handle);
