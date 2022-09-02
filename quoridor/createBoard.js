@@ -59,6 +59,7 @@ function createObstacleElem(idx,id){
 	elem.className='obstacleUnit';
 	elem.className+=" "+id+'Obstacle';
 	elem.id=id+'ObstacleUnit'+idx;
+	//elem.dataset.
 	elem.src="./images/obstacle.png";
 	elem.alt='obs';
 	return elem;
