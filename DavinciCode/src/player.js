@@ -44,6 +44,8 @@ export class Player {
         GameManager.renderCards(this.cards, null);
       }
 
+      $deckContainer.onclick = null;
+
       if (this.cards.length === 4) {
         $deckContainer.removeEventListener("click", arrowF);
 
@@ -57,8 +59,6 @@ export class Player {
           if (i === pCardsArr.length - 1) this.gm.gameStart();
         }
       }
-
-      $deckContainer.onclick = null;
     };
   }
 
