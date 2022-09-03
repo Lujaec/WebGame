@@ -21,7 +21,7 @@ export class Player {
     setIsMyTurn(value_Bool){ this._isMyTurn = value_Bool;}
 
     getPos() { return this._pos; }
-    setPos(r,c) { this._pos.row = r, this._pos.col = c; }
+    setPos(r,c) { this._pos.row = r, this._pos.col = c; }  //rc말고객체
 
     getElem() { return this._elem; }
     setElem(elem) { this._elem=elem; }
