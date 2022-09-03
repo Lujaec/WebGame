@@ -2,34 +2,67 @@ import { Card } from "./card.js";
 import { GameManager } from "./gameManager.js";
 
 export class Player {
-  constructor() {
+  constructor(gm) {
+    this.gm = gm;
     this.cards = [];
     this.openCards = [];
     this.LastPickedCard = new Card();
   }
 
-  pick(color, deck) {
-    const $remainText = document.querySelector("#" + color + "RemainText");
-    const remain = $remainText.textContent.split(" ")[2];
+  pick(deck) {
+    const $deckContainer = document.querySelector(".deck");
+    let arrowF;
 
-    if (remain > 0)
-      $remainText.textContent = $remainText.textContent.replace(
-        remain,
-        remain - 1
-      );
+    $deckContainer.onclick = (e) => {
+      console.log("sd");
+      const targetId = e.target.id;
+      const $playerCards = document.querySelector(".player-cards"); //밖으로 빼도 되나?
 
-    if (color === "white" && deck.whiteCards.length >= 1) {
-      this.cards.push(deck.whiteCards.pop("white"));
-      this.LastPickedCard = this.cards[this.cards.length - 1];
-    } else if (color === "black" && deck.blackCards.length >= 1) {
-      this.cards.push(deck.blackCards.pop("black"));
-      this.LastPickedCard = this.cards[this.cards.length - 1];
-    } else {
-      this.LastPickedCard = null;
-    }
+      if (e.target.nodeName === "IMG") {
+        const color = targetId === "whiteRemainImg" ? "white" : "black";
+        const $remainText = document.querySelector("#" + color + "RemainText");
+        const remain = $remainText.textContent.split(" ")[2];
+
+        if (remain > 0)
+          $remainText.textContent = $remainText.textContent.replace(
+            remain,
+            remain - 1
+          );
+
+        if (color === "white" && deck.whiteCards.length >= 1) {
+          this.cards.push(deck.whiteCards.pop("white"));
+          this.LastPickedCard = this.cards[this.cards.length - 1];
+        } else if (color === "black" && deck.blackCards.length >= 1) {
+          this.cards.push(deck.blackCards.pop("black"));
+          this.LastPickedCard = this.cards[this.cards.length - 1];
+        } else {
+          this.LastPickedCard = null;
+        }
+
+        const $img = document.createElement("img");
+        $playerCards.appendChild($img);
+        GameManager.renderCards(this.cards, null);
+      }
+
+      $deckContainer.onclick = null;
+
+      if (this.cards.length === 4) {
+        $deckContainer.removeEventListener("click", arrowF);
+
+        const pCardsArr = this.cards;
+        for (let i = 0; i < pCardsArr.length; ++i) {
+          if (pCardsArr[i].number === 12) {
+            this.choiceJokerPos(i);
+            break;
+          }
+
+          if (i === pCardsArr.length - 1) this.gm.gameStart();
+        }
+      }
+    };
   }
 
-  choiceJokerPos(idx, gm) {
+  choiceJokerPos(idx) {
     const $playerCards = document.querySelector(".player-cards");
     const $jokerSelect = document.querySelector("#jokerSelect");
     const $imgs = [];
@@ -84,7 +117,12 @@ export class Player {
         }
       }
 
-      if (this.cards.length === 4);
+      if (this.cards.length === 4) {
+        let flag = true;
+        for (const item of this.cards) if (item.number === 12) flag = false;
+
+        if (flag) this.gm.gameStart();
+      }
     };
 
     $playerCards.addEventListener("click", handle);
@@ -99,4 +137,6 @@ export class Player {
     element.className = "fa-solid fa-caret-down fa-3x trans";
     $playerCards.appendChild(element);
   }
+
+  guess() {}
 }

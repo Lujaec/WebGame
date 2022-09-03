@@ -4,8 +4,8 @@ import { Deck } from "./deck.js";
 
 export class GameManager {
   constructor() {
-    this.player = new Player();
-    this.computer = new Computer();
+    this.player = new Player(this);
+    this.computer = new Computer(this);
     this.deck = new Deck();
     this.currentTurn = this.computer;
 
@@ -74,10 +74,9 @@ export class GameManager {
     }
   }
 
-  initGame() {
+  async initGame() {
     const $deckContainer = document.querySelector(".deck");
     const $computerCards = document.querySelector(".computer-cards");
-    let arrowF;
 
     for (let i = 0; i < 4; ++i) {
       const img = document.createElement("img");
@@ -86,35 +85,20 @@ export class GameManager {
 
     GameManager.renderCards(this.player.cards, this.computer.cards);
 
-    $deckContainer.addEventListener(
-      "click",
-      (arrowF = (e) => {
-        const targetId = e.target.id;
-        const $playerCards = document.querySelector(".player-cards");
+    const sleep = (sec) => {
+      return new Promise((resolve) => setTimeout(resolve, sec));
+    };
 
-        if (e.target.nodeName === "IMG") {
-          const color = targetId === "whiteRemainImg" ? "white" : "black";
+    while (this.player.cards.length != 4) {
+      this.player.pick(this.deck);
+      await sleep(20);
+    }
+  }
 
-          this.player.pick(color, this.deck);
+  gameStart() {
+    console.log("gameStart");
 
-          const $img = document.createElement("img");
-          $playerCards.appendChild($img);
-          GameManager.renderCards(this.player.cards, this.computer.cards);
-        }
-
-        if (this.player.cards.length === 4) {
-          $deckContainer.removeEventListener("click", arrowF);
-
-          const pCardsArr = this.player.cards;
-          for (let i = 0; i < pCardsArr.length; ++i) {
-            if (pCardsArr[i].number === 12) {
-              this.player.choiceJokerPos(i, this);
-              break;
-            }
-          }
-        }
-      })
-    );
+    this.player.pick(this.deck);
   }
 }
 
