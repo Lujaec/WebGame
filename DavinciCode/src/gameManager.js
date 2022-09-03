@@ -4,8 +4,8 @@ import { Deck } from "./deck.js";
 
 export class GameManager {
   constructor() {
-    this.player = new Player();
-    this.computer = new Computer();
+    this.player = new Player(this);
+    this.computer = new Computer(this);
     this.deck = new Deck();
     this.currentTurn = this.computer;
 
@@ -108,13 +108,21 @@ export class GameManager {
           const pCardsArr = this.player.cards;
           for (let i = 0; i < pCardsArr.length; ++i) {
             if (pCardsArr[i].number === 12) {
-              this.player.choiceJokerPos(i, this);
+              this.player.choiceJokerPos(i);
               break;
             }
+
+            if (i === pCardsArr.length - 1) this.gameStart();
           }
         }
       })
     );
+  }
+
+  gameStart() {
+    console.log("gameStart");
+
+    this.player.pick();
   }
 }
 

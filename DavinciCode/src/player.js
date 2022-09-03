@@ -2,7 +2,8 @@ import { Card } from "./card.js";
 import { GameManager } from "./gameManager.js";
 
 export class Player {
-  constructor() {
+  constructor(gm) {
+    this.gm = gm;
     this.cards = [];
     this.openCards = [];
     this.LastPickedCard = new Card();
@@ -29,7 +30,7 @@ export class Player {
     }
   }
 
-  choiceJokerPos(idx, gm) {
+  choiceJokerPos(idx) {
     const $playerCards = document.querySelector(".player-cards");
     const $jokerSelect = document.querySelector("#jokerSelect");
     const $imgs = [];
@@ -84,7 +85,12 @@ export class Player {
         }
       }
 
-      if (this.cards.length === 4);
+      if (this.cards.length === 4) {
+        let flag = true;
+        for (const item of this.cards) if (item.number === 12) flag = false;
+
+        if (flag) this.gm.gameStart();
+      }
     };
 
     $playerCards.addEventListener("click", handle);
@@ -99,4 +105,6 @@ export class Player {
     element.className = "fa-solid fa-caret-down fa-3x trans";
     $playerCards.appendChild(element);
   }
+
+  guess() {}
 }

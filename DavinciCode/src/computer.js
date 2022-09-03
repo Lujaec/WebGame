@@ -1,12 +1,13 @@
 import { Card } from "./card.js";
 
 export class Computer {
-  constructor() {
+  constructor(gm) {
+    this.gm = gm;
     this.cards = [];
     this.openCards = [];
     this.LastPickedCard = new Card();
-    this.myGuess = []; //{number, pos, turnNumber}
-    this.guessOfPlayer = []; //{number, pos, turnNumber}를 저장
+    this.myGuess = []; //{지목했던 card객체, number}
+    this.guessOfPlayer = []; //{지목했던 card 객체, number}를 저장
     this.addedCardPosOfPlayer = []; // player가 뽑고 넣은 위치를 기억
   }
 
@@ -44,23 +45,22 @@ export class Computer {
       }
     }
 
-    //open 되어 있는 카드로
+    //open 되어 있는 카드로 경우의 수를 줄임
     for (let i = 0; i < playerCards.length; ++i) {
       if (playerCards[i].open) {
-        possibility[i] = [];
         if (Number.isInteger(playerCards[i])) {
-          for (const j = 0; j < i; ++i) {
+          for (let j = 0; j < i; ++i) {
             if (playerCards[j].color === playerCards[i].color) {
-              possibility.filter(function (value) {
-                return value < playerCards[i].number;
+              possibility[j] = possibility[j].filter(function (value) {
+                value == 12 || value < playerCards[i].number;
               });
             }
           }
 
           for (const j = i + 1; j < playerCards.length; ++i) {
             if (playerCards[j].color === playerCards[i].color) {
-              possibility.filter(function (value) {
-                return value > playerCards[i].number;
+              possibility[j] = possibility[j].filter(function (value) {
+                value == 12 || value > playerCards[i].number;
               });
             }
           }
@@ -68,13 +68,40 @@ export class Computer {
           for (let j = 0; j < playerCards.length; ++j) {
             if (i === j) continue;
 
-            possibility.filter(function (value) {
-              return value < 12;
-            });
+            if (playerCards[j].color === playerCards[i].color) {
+              possibility[j] = possibility[j].filter(function (value) {
+                value < 12;
+              });
+            }
           }
         }
       }
     }
+
+    //이전에 했던 추측을 활용해 경우의 수 줄이기
+    for (const item of this.myGuess) {
+      if (item.card.number === item.number) continue;
+
+      let idx = 0;
+      while (playerCards[idx] != item.card) {
+        idx += 1;
+      }
+
+      possibility[idx] = possibility[idx].filter(function (value) {
+        value != item.number;
+      });
+    }
+
+    li = possibility.reduce(function (prev, curr) {
+      return prev.length < curr.length ? prev : curr;
+    });
+
+    for (let i = 0; i < possibility.length; ++i)
+      if (possibility[i].length === li.length) {
+        this.myGuess.push({ card: playerCards[i], number: possibility[i][0] });
+      }
+
+    console.log(this.myGuess);
   }
 
   initRange() {
@@ -106,9 +133,6 @@ export class Computer {
     for (let i = 0; i < blackCardList.length; ++i) {
       if (blackCardList[i]) this.canBlack.push(i);
     }
-
-    console.log(this.canWhite);
-    console.log(this.canBlack);
   }
 
   selectBestJockerPos(idx) {}
