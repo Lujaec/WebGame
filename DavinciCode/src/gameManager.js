@@ -74,10 +74,9 @@ export class GameManager {
     }
   }
 
-  initGame() {
+  async initGame() {
     const $deckContainer = document.querySelector(".deck");
     const $computerCards = document.querySelector(".computer-cards");
-    let arrowF;
 
     for (let i = 0; i < 4; ++i) {
       const img = document.createElement("img");
@@ -86,43 +85,20 @@ export class GameManager {
 
     GameManager.renderCards(this.player.cards, this.computer.cards);
 
-    $deckContainer.addEventListener(
-      "click",
-      (arrowF = (e) => {
-        const targetId = e.target.id;
-        const $playerCards = document.querySelector(".player-cards");
+    const sleep = (sec) => {
+      return new Promise((resolve) => setTimeout(resolve, sec));
+    };
 
-        if (e.target.nodeName === "IMG") {
-          const color = targetId === "whiteRemainImg" ? "white" : "black";
-
-          this.player.pick(color, this.deck);
-
-          const $img = document.createElement("img");
-          $playerCards.appendChild($img);
-          GameManager.renderCards(this.player.cards, this.computer.cards);
-        }
-
-        if (this.player.cards.length === 4) {
-          $deckContainer.removeEventListener("click", arrowF);
-
-          const pCardsArr = this.player.cards;
-          for (let i = 0; i < pCardsArr.length; ++i) {
-            if (pCardsArr[i].number === 12) {
-              this.player.choiceJokerPos(i);
-              break;
-            }
-
-            if (i === pCardsArr.length - 1) this.gameStart();
-          }
-        }
-      })
-    );
+    while (this.player.cards.length != 4) {
+      this.player.pick(this.deck);
+      await sleep(20);
+    }
   }
 
   gameStart() {
     console.log("gameStart");
 
-    this.player.pick();
+    this.player.pick(this.deck);
   }
 }
 
