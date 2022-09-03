@@ -1,6 +1,5 @@
 import * as creating from "./createBoard.js";
-import {initBoardEvents} from "./Board.js";
-import { GameManager } from "./GameManager.js";
+import { gameStart } from "./GameManager.js";
 
 creating.createPlayerInfo('player2');
 creating.createObstacleInfo('player2');
@@ -9,5 +8,6 @@ creating.createObstacleInfo('player1');
 creating.createPlayerInfo('player1');
 //initBoardEvents();
 
-let game = new GameManager();
-game.gameStart();
+//let game = new GameManager();
+//game.gameStart();
+gameStart();

@@ -15,11 +15,10 @@ export class Board{
 		setPlayerBoardArr(from, to, who){
 			this._playerBoardArr[from.row][from.col]=0;
 			this._playerBoardArr[to.row][to.col]=who;
-			
-			//b this._nowTurn='player1';
-		}
-		setObstacleBoardArr(){
 
+		}
+		setObstacleBoardArr(row,col,dir){
+			this._obstacleBoardArr[row][col]=dir;
 		}
 		printPlayerBoardArr(){
 			console.table(this._playerBoardArr);
@@ -38,5 +37,16 @@ export function initBoardEvents(){
 			let target = event.target;
 			console.log(`${target.dataset.row}, ${target.dataset.col} ${target.className} ${target.id}`);
 		}
+	}
+}
+export function positionObstacleOnBoard(elem, row, col){
+	//console.log(elem);
+	if(elem.dataset.dir=='vertical'){
+  	elem.style.top=row * 70 + 'px';
+		elem.style.left=col * 70 + 50 + 'px';
+	}
+	else {
+		elem.style.top=row * 70 + 50 + 'px';
+		elem.style.left=col * 70 + 'px';
 	}
 }

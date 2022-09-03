@@ -35,6 +35,7 @@ td.obstacleBoardUnit {
 }
 td.obstacleBoardUnit img{
   position: absolute;
+  
 }
 .obstacleInfo {
   width: 611px;
@@ -45,11 +46,10 @@ td.obstacleBoardUnit img{
   /** 플렉서블 박스  */
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 .obstacleInfo img {
   border: 1px solid brown;
-  width: 15px;
-  height: 100px;
   margin: auto;
   box-sizing: border-box;
 }
