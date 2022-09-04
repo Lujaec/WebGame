@@ -4,7 +4,6 @@ export class Computer {
   constructor(gm) {
     this.gm = gm;
     this.cards = [];
-    this.openCards = [];
     this.LastPickedCard = new Card();
     this.myGuess = []; //{지목했던 card객체, number}
     this.guessOfPlayer = []; //{지목했던 card 객체, number}를 저장
@@ -32,10 +31,13 @@ export class Computer {
     }
   }
 
-  guess(playerCards) {
+  guess() {
+    const playerCards = this.gm.player.cards;
     this.initRange();
 
     const possibility = [];
+    playerCards[0].open = true;
+    playerCards[3].open = true;
 
     for (let i = 0; i < playerCards.length; ++i) {
       if (playerCards[i].color === "white") {
@@ -48,20 +50,20 @@ export class Computer {
     //open 되어 있는 카드로 경우의 수를 줄임
     for (let i = 0; i < playerCards.length; ++i) {
       if (playerCards[i].open) {
-        if (Number.isInteger(playerCards[i])) {
-          for (let j = 0; j < i; ++i) {
+        if (Number.isInteger(playerCards[i].number)) {
+          for (let j = 0; j < i; ++j) {
             if (playerCards[j].color === playerCards[i].color) {
-              possibility[j] = possibility[j].filter(function (value) {
-                value == 12 || value < playerCards[i].number;
-              });
+              possibility[j] = possibility[j].filter(
+                (value) => value == 12 || value < playerCards[i].number
+              );
             }
           }
 
-          for (const j = i + 1; j < playerCards.length; ++i) {
+          for (let j = i + 1; j < playerCards.length; ++j) {
             if (playerCards[j].color === playerCards[i].color) {
-              possibility[j] = possibility[j].filter(function (value) {
-                value == 12 || value > playerCards[i].number;
-              });
+              possibility[j] = possibility[j].filter(
+                (value) => value == 12 || value > playerCards[i].number
+              );
             }
           }
         } else {
@@ -69,9 +71,7 @@ export class Computer {
             if (i === j) continue;
 
             if (playerCards[j].color === playerCards[i].color) {
-              possibility[j] = possibility[j].filter(function (value) {
-                value < 12;
-              });
+              possibility[j] = possibility[j].filter((value) => value < 12);
             }
           }
         }
@@ -87,21 +87,39 @@ export class Computer {
         idx += 1;
       }
 
-      possibility[idx] = possibility[idx].filter(function (value) {
-        value != item.number;
-      });
+      possibility[idx] = possibility[idx].filter(
+        (value) => value != item.number
+      );
     }
 
-    li = possibility.reduce(function (prev, curr) {
-      return prev.length < curr.length ? prev : curr;
-    });
+    let advancedPossibility = [];
+    for (let i = 0; i < playerCards.length; ++i)
+      advancedPossibility.push(new Set());
+    this.bruteforce(0, possibility, [], [], advancedPossibility); // 간추려진 possibility로 완전 탐색을 해봐서 안되는 경우의 수를 줄임
 
-    for (let i = 0; i < possibility.length; ++i)
-      if (possibility[i].length === li.length) {
-        this.myGuess.push({ card: playerCards[i], number: possibility[i][0] });
+    const li = advancedPossibility.reduce(function (prev, curr, idx) {
+      if (playerCards[idx].open) return prev;
+      return prev.size < curr.size ? prev : curr;
+    }, new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]));
+
+    for (let i = 0; i < advancedPossibility.length; ++i)
+      if (advancedPossibility[i].size === li.size) {
+        this.myGuess.push({
+          card: playerCards[i],
+          number: [...advancedPossibility[i]][0],
+        });
+        break;
       }
 
-    console.log(this.myGuess);
+    const ans = this.myGuess[this.myGuess.length - 1];
+    if (
+      ans.card.number === ans.number ||
+      (!Number.isInteger(ans.card.number) && ans.number === 12)
+    ) {
+      // 플레이어 카드 공개
+    }
+
+    //턴 넘김
   }
 
   initRange() {
@@ -135,5 +153,101 @@ export class Computer {
     }
   }
 
-  selectBestJockerPos(idx) {}
+  selectBestJokerPos(idx) {
+    function rangeData() {
+      this.min = 0;
+      this.max = 12;
+    }
+
+    const jokerColor = this.cards[idx].color;
+    let arr = new Array(this.cards.length);
+
+    for (let i = 0; i < this.cards.length; ++i) arr[i] = new rangeData();
+
+    for (let i = 0; i < this.cards.length; ++i) {
+      if (this.cards[i].open) {
+        for (let j = 0; j < i; ++j)
+          if (
+            this.cards[i].color === "black" ||
+            this.cards[j].color === "whtie"
+          ) {
+            arr[j].max = this.cards[i].number - 1;
+          } else {
+            arr[j].max = this.cards[i].number;
+          }
+      }
+    }
+  }
+
+  bruteforce(
+    idx,
+    possibility,
+    currentBlackCards,
+    currentWhiteCards,
+    advancedPossibility //set을 원소로 갖는 리스트
+  ) {
+    const playerCards = this.gm.player.cards;
+
+    if (idx === playerCards.length) {
+      for (const item of currentBlackCards) {
+        advancedPossibility[item.idx].add(item.number);
+      }
+      for (const item of currentWhiteCards) {
+        advancedPossibility[item.idx].add(item.number);
+      }
+
+      return;
+    }
+
+    const card = playerCards[idx];
+
+    if (card.open) {
+      if (card.color === "black")
+        currentBlackCards.push({ number: card.number, idx: idx });
+      else currentWhiteCards.push({ number: card.number, idx: idx });
+      this.bruteforce(
+        idx + 1,
+        possibility,
+        currentBlackCards,
+        currentWhiteCards,
+        advancedPossibility
+      );
+      if (card.color === "black") currentBlackCards.pop();
+      else currentWhiteCards.pop();
+    } else {
+      for (let num of possibility[idx]) {
+        let checkCards;
+        if (card.color === "black") checkCards = currentBlackCards;
+        else checkCards = currentWhiteCards;
+
+        let flag = false;
+        for (const item of checkCards) {
+          if (item.number === num) {
+            flag = true;
+            break;
+          }
+        }
+        if (flag) continue;
+
+        checkCards.push({ number: num, idx });
+        if (card.color === "black")
+          this.bruteforce(
+            idx + 1,
+            possibility,
+            checkCards,
+            currentWhiteCards,
+            advancedPossibility
+          );
+        else
+          this.bruteforce(
+            idx + 1,
+            possibility,
+            currentBlackCards,
+            checkCards,
+            advancedPossibility
+          );
+        checkCards.pop();
+      }
+    }
+  }
 }
