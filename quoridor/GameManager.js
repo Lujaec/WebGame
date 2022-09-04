@@ -145,7 +145,7 @@ export function dropPlayer(event){
   }
   let imgElem=document.getElementById(data);  //옮길 이미지 요소
   this.style.backgroundColor ='';
-  if(!board.isPossibleMove(beforePos,afterPos)){
+  if(!board.isPossibleMove(beforePos,afterPos,0)){
     //console.log('playermovenoooooooooooooooo');
     return;
   }
