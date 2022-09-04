@@ -34,32 +34,33 @@ export function gameStart(){
   changeTurn(getNowTurn(),getNextTurn());
   //changeTurn(player2,player1);
 }
-export function changeTurn(from,to){
-  setNowTurn(to);
-  setNextTurn(from);
+export function changeTurn(before,after){
+  setNowTurn(after);
+  setNextTurn(before);
 
-  document.getElementById(from.getName()+'info').style.backgroundColor='';
-  document.getElementById(to.getName()+'info').style.backgroundColor='red'; //현재턴표시
-  console.log('nowTurn : '+getNowTurn().getName());
+  document.getElementById(before.getName()+'info').style.backgroundColor='';
+  document.getElementById(after.getName()+'info').style.backgroundColor='red'; //현재턴표시
+  console.log('---'+getNowTurn().getName()+' 턴 시작---');
 
-  setDisabled(from.getElem());
-  setAbled(to.getElem());
+  setDisabled(before.getElem());
+  setAbled(after.getElem());
 
 
-  let fromObstacles=document.querySelectorAll('.'+from.getName()+'Obstacle');
-  for(let elem of fromObstacles){
+  let beforeObstacles=document.querySelectorAll('.'+before.getName()+'Obstacle');
+  for(let elem of beforeObstacles){
     setDisabled(elem);
   }
-  let toObstacles=document.querySelectorAll('.'+to.getName()+'Obstacle');
-  for(let elem of toObstacles){
+  let afterObstacles=document.querySelectorAll('.'+after.getName()+'Obstacle');
+  for(let elem of afterObstacles){
     if(elem.dataset.isPositioned=='true') { continue; }
     setAbled(elem);
   }
-  board.printPlayerBoardArr();
-  board.printObstacleBoardArr();
-  console.log(player1);
-  console.log(player2);
+  //board.printPlayerBoardArr();
+  //board.printObstacleBoardArr();
 
+  //console.log(player1);
+  //console.log(player2);
+  
 }
 
 function setDisabled(elem){
@@ -90,9 +91,9 @@ function initObstacleEvents(){
 
   }
 }
-function moveTo(from, to, who){
-  who.setPos(to.row,to.col);
-  board.setPlayerBoardArr(from,to,who);
+function moveTo(before, after, who){
+  who.setPos(after.row,after.col);
+  board.setPlayerBoardArr(before,after,who);
   //board.printPlayerBoardArr();
 }
 
@@ -143,11 +144,16 @@ export function dropPlayer(event){
     col : this.dataset.col,
   }
   let imgElem=document.getElementById(data);  //옮길 이미지 요소
+  this.style.backgroundColor ='';
+  if(!board.isPossibleMove(beforePos,afterPos)){
+    //console.log('playermovenoooooooooooooooo');
+    return;
+  }
+
   event.target.append(imgElem);  //목적지에 추가
   moveTo(beforePos, afterPos, getNowTurn());
-  //board.setPlayerBoardArr(beforePos, afterPos, getNowTurn()); //보드 위치 업데이트
-  //getNowTurn().setPos(this.dataset.row,this.dataset.col); //플레이어 정보 업데이트
-
+  board.checkWin(getNowTurn());
+  console.log('---'+getNowTurn().getName()+' 턴 종료---');
   changeTurn(getNowTurn(),getNextTurn());
  
 }
@@ -163,6 +169,9 @@ export function dragstartObstacle(event){
   event.dataTransfer.setData('imgId',event.target.id);
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
+    if(elem.dataset.dir!='none'){ //장애물이 존재하는 셀에는 이벤트추가안함.
+      continue;
+    }
     elem.addEventListener('dragenter',dragenterObstacle);
     elem.addEventListener('dragleave',dragleaveObstacle);
     elem.addEventListener('dragover',dragoverObstacle);
@@ -189,17 +198,26 @@ export function dropObstacle(event){
   let imgElem=document.getElementById(data);
   let row = event.target.dataset.row;
   let col = event.target.dataset.col;
+  this.style.backgroundColor ='';
+  if(!board.isPossibleObstacle(row,col,imgElem.dataset.dir)){ //위아래좌우 있어서 못놓음
+    //console.log('noooooooooooooooooooooooooooooooooo');
+    return;
+  }
   event.target.append(imgElem);
+  event.target.dataset.dir=imgElem.dataset.dir;
   positionObstacleOnBoard(imgElem,row, col); //img요소, row, col //보드에 맞는 css 표시
   imgElem.dataset.isPositioned='true';
   setDisabled(imgElem);
-  console.log(imgElem);
+  //this.removeEventListener('drop',dropObstacle); // 놓인 곳 이벤트제거
+  
   board.setObstacleBoardArr(row,col,imgElem.dataset.dir); //obstacle 보드에 장애물 정보 추가
+  
+  console.log('---'+getNowTurn().getName()+' 턴 종료---');
   changeTurn(getNowTurn(),getNextTurn());
 }
 export function clickObstacle(event){
   console.log('clikck!!');
-  console.log(event.target.src);
+  //console.log(event.target.src);
   if(event.target.dataset.dir=='vertical'){
     event.target.src="./images/obstacleHorizontal.png";
     event.target.dataset.dir='horizontal';

@@ -33,7 +33,11 @@ function createBoardUnit(row, col, className) {
 		elem.setAttribute("data-row",row); //어차피문자열변환
 		elem.setAttribute("data-col",col); //어차피문자열변환
 	}
-	if(className == 'playerBoardUnit'){ elem.innerHTML="("+row+", "+col+")"; }
+	//if(className == 'playerBoardUnit'){ elem.innerHTML="("+row+", "+col+")"; }
+	if(className == 'obstacleBoardUnit'){ 
+		elem.setAttribute("data-dir",'none');
+		
+	}
 	elem.className=className;
 	return elem;
 }
