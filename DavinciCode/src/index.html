@@ -21,13 +21,22 @@
       <p align="center">Da Vinchi Code</p>
     </header>
     <section class="board-game">
+      <div id="modal" class="modal-overlay">
+        <div class="modal-window">
+          <div class="title">
+            <h2>Guess</h2>
+          </div>
+          <div class="close-area">X</div>
+          <div class="content"></div>
+        </div>
+      </div>
       <div class="computer-cards container"></div>
       <div class="deck container">
-        <div id="whiteRemain">
+        <div id="whiteRemain" class="selected">
           <img id="whiteRemainImg" src="../images/wBack.jpg" alt="dawdwa" />
           <span id="whiteRemainText">Remainer : 10</span>
         </div>
-        <div id="blackRemain">
+        <div id="blackRemain" class="selected">
           <img id="blackRemainImg" src="../images/bBack.jpg" alt="dawdwa" />
           <span id="blackRemainText">Remainer : 10</span>
         </div>
