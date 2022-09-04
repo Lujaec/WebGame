@@ -16,7 +16,7 @@ export class GameManager {
 
     for (let i = 0; i < this.computer.cards.length; ++i) {
       if (this.computer.cards[i].number === 12)
-        this.computer.selectBestJockerPos(i);
+        this.computer.selectBestJokerPos(i);
     }
   }
 
@@ -64,11 +64,18 @@ export class GameManager {
       for (let j = 0; j < obj[i].length; ++j) {
         const color = obj[i][j].color;
         let number = obj[i][j].number;
+        let open = obj[i][j].open;
+        let openStr = "";
 
         if (obj[i] === cCards) number = "back";
         else if (!Number.isInteger(number)) number = 12;
 
-        img.src = "../images/" + color[0] + number + ".jpg";
+        if (open) {
+          if (obj[i] == cCards) number = "";
+          else openStr = "open";
+        }
+
+        img.src = "../images/" + openStr + color[0] + number + ".jpg";
         img = img.nextElementSibling;
       }
     }
@@ -98,7 +105,63 @@ export class GameManager {
   gameStart() {
     console.log("gameStart");
 
-    this.player.pick(this.deck);
+    this.player.turn(this.deck);
+  }
+
+  showModal() {
+    const $computerCards = document.querySelector(".computer-cards");
+
+    $computerCards.onclick = (e) => {
+      if (e.target.nodeName != "IMG") return;
+
+      const modal = document.getElementById("modal");
+      const closeBtn = modal.querySelector(".close-area");
+      const modalContent = modal.querySelector(".content");
+      const imgContainer = document.createElement("div");
+      const cardColor = e.target.src.includes("bback") ? "black" : "white";
+      console.log(modalContent);
+
+      console.log(modalContent.children);
+      if (modalContent.children.length == 0)
+        modalContent.appendChild(imgContainer);
+
+      closeBtn.onclick = (e) => {
+        modalContent.removeChild(modalContent.firstElementChild);
+        modal.style.display = "none";
+
+        closeBtn.onClick = null;
+      };
+
+      modal.style.display = "flex";
+
+      imgContainer.classList.add("container");
+
+      const canCards = [];
+      for (let i = 0; i < 13; ++i) canCards.push(true);
+
+      for (const card of this.computer.cards) {
+        if (card.color === cardColor && card.open) {
+          const number = card.number;
+          if (!Number.isInteger(number)) number = 12;
+          canCards[number] = false;
+        }
+      }
+      for (const card of this.player.cards) {
+        if (card.color === cardColor) {
+          let number = card.number;
+          if (!Number.isInteger(number)) number = 12;
+          canCards[number] = false;
+        }
+      }
+
+      for (let i = 0; i < 13; ++i) {
+        if (canCards[i]) {
+          const img = document.createElement("img");
+          img.src = "../images/" + cardColor[0] + i + ".jpg";
+          imgContainer.appendChild(img);
+        }
+      }
+    };
   }
 }
 
