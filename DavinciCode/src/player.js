@@ -14,7 +14,6 @@ export class Player {
     let arrowF;
 
     $deckContainer.onclick = (e) => {
-      console.log("sd");
       const targetId = e.target.id;
       const $playerCards = document.querySelector(".player-cards"); //밖으로 빼도 되나?
 
@@ -58,6 +57,10 @@ export class Player {
 
           if (i === pCardsArr.length - 1) this.gm.gameStart();
         }
+      } else if (this.cards.length > 4) {
+        if (this.LastPickedCard.number === 12)
+          this.choiceJokerPos(this.cards.length - 1);
+        this.guess();
       }
     };
   }
@@ -138,5 +141,18 @@ export class Player {
     $playerCards.appendChild(element);
   }
 
-  guess() {}
+  guess() {
+    const $computerCards = document.querySelector(".computer-cards");
+    for (const item of $computerCards.children) item.classList.add("trans");
+
+    this.gm.showModal();
+
+    //for (const item of $computerCards.children) item.classList.remove("trans");
+  }
+
+  turn(deck) {
+    this.pick(deck);
+
+    let stop = false;
+  }
 }
