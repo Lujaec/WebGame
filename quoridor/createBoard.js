@@ -1,3 +1,9 @@
+
+export function createContainer(){
+	let container = document.createElement('div');
+	container.id='container';
+	document.body.append(container);
+}
 export function createBoard(){
 	let board=document.createElement('table');
 	board.id='board'
