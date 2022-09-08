@@ -81,7 +81,7 @@ export class Board{
 				let dy = [-1,0,1,0];
 				let dx = [0,1,0,-1];
 				let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
-				let depth=1; //depth가 0인경우는 없다
+				let depth=0; //depth가 0인경우는 없다
 				let queue= new Queue();
 				queue.enqueue(player.getPos());
 				visitedArr[player.getPos().row][player.getPos().col]=1;
@@ -264,7 +264,7 @@ export function positionObstacleCenter(elem, pageX, pageY){
   elem.style.top = pageY - elem.offsetHeight / 2 + 'px';
 }
 
-class Queue {
+class QueueSlow {
   constructor() {
     this._arr = [];
   }
@@ -280,4 +280,45 @@ class Queue {
 	size(){
 		return this._arr.length;
 	}
+}
+class Queue { //rear에 추가, front에서 뺌
+  constructor() {
+    this.storage = {};
+    this.front = 0;
+    this.rear = -1;
+  }
+	enqueue(value) {
+    if (this.size() === 0) {
+      this.storage['0'] = value;
+			this.front=0;
+			this.rear=0;
+    } else {
+      this.rear += 1;
+      this.storage[this.rear] = value;
+    }
+  }
+  dequeue() {
+    let temp;
+    if (this.front === this.rear) { //원소 1개
+      temp = this.storage[this.front];
+      delete this.storage[this.front];
+      this.front = 0;
+      this.rear = -1;
+    } else {
+      temp = this.storage[this.front];
+      delete this.storage[this.front];
+      this.front += 1;
+    }
+    return temp;
+  }
+  empty(){
+		return this.size()==0;
+	}
+  size() {
+    
+    return this.rear - this.front + 1;
+    
+  }
+  
+  
 }

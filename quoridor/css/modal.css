@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 5px solid black;
+
 }
 .modal .bg {
   width: 100%;
@@ -25,4 +25,10 @@
 }
 .hidden {
   display: none;
+}
+.modal button {
+  width: 150px;
+  height: 200px;
+  margin: 20px;
+  font-size : 20px;
 }

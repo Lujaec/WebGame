@@ -9,7 +9,9 @@ export function createModal(){
   bg.className='bg';
   modalBox.className='modalBox';
   btn1.innerText='vs Computer';
+  btn1.id='btn1';
   btn2.innerText='vs Player';
+  btn2.id='btn2';
 
   modalBox.append(btn1);
   modalBox.append(btn2);
@@ -18,5 +20,5 @@ export function createModal(){
   modal.append(modalBox);
 
   document.body.append(modal);
+
 }
-createModal();

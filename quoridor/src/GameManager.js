@@ -1,12 +1,12 @@
 import {Player} from "./Player.js";
 import {Board, positionObstacleOnBoard, positionObstacleCenter} from "./Board.js";
-//* as events from "./dragEvents.js";
+import {Computer} from "./Computer.js";
 
 
 export let board = new Board();
 export let player1 = new Player("player1", "black",8,4);
 export let player2 = new Player("player2", "white",0,4);
-
+export let computer = new Computer("player2", "white",0,4);
 
 let _nowTurn = null;
 let _nextTurn = null;
@@ -16,17 +16,42 @@ function getNowTurn(){ return _nowTurn;}
 function setNextTurn(player) { _nextTurn=player;}
 function getNextTurn() { return _nextTurn;}
 
-export function gameStart(){
+export function gameStart(gameMode){ //2인용
+  console.log(gameMode);
+
+  document.querySelector('.modal').classList.add('hidden'); //모달창 종료
   board.setPlayerBoardArr(player1.getPos(),player1.getPos(),player1); //playerBoard에 올려줌
   board.setPlayerBoardArr(player2.getPos(),player2.getPos(),player2); //playerBoard에 올려줌
   player1.initElem('black'); //elem을 토큰이미지요소로
   player2.initElem('white');
+
+  document.querySelector(player1.getTableId()).append(player1.getElem());
+  document.querySelector(player2.getTableId()).append(player2.getElem());
   
-  document.querySelector(player1.getId()).append(player1.getElem());
-  document.querySelector(player2.getId()).append(player2.getElem());
-  
-  initPlayerEvents();
+  initPlayerEvents(gameMode);
   initObstacleEvents();
+
+  setNowTurn(player2);
+  setNextTurn(player1);
+
+  changeTurn(getNowTurn(),getNextTurn());
+  //changeTurn(player2,player1);
+}
+export function gameStartComputer(){ //1인용플레이
+  player2=computer; //플레이어2 컴퓨터로 설정
+  document.querySelector('#player2info').innerHTML='<img src=./images/white.png alt="white"></img>Computer'; //위에 문구 바꿈
+
+  document.querySelector('.modal').classList.add('hidden'); //모달창 종료
+  board.setPlayerBoardArr(player1.getPos(),player1.getPos(),player1); //playerBoard에 올려줌
+  board.setPlayerBoardArr(player2.getPos(),player2.getPos(),player2); //playerBoard에 올려줌
+  player1.initElem('black'); //elem을 토큰이미지요소로
+  player2.initElem('white');
+
+  document.querySelector(player1.getTableId()).append(player1.getElem());
+  document.querySelector(player2.getTableId()).append(player2.getElem());
+  
+  initPlayerEvents('vsComputer');
+  initObstacleEvents('vsComputer');
 
   setNowTurn(player2);
   setNextTurn(player1);
@@ -37,24 +62,35 @@ export function gameStart(){
 export function changeTurn(before,after){
   setNowTurn(after);
   setNextTurn(before);
+  //console.log(getNowTurn());
+  //console.log(getNextTurn());
 
   document.getElementById(before.getName()+'info').style.backgroundColor='';
   document.getElementById(after.getName()+'info').style.backgroundColor='red'; //현재턴표시
-  console.log('---'+getNowTurn().getName()+' 턴 시작---');
+  console.log('---'+getNowTurn().getId()+' 턴 시작---');
 
+  let beforeObstacles=document.querySelectorAll('.'+before.getName()+'Obstacle');
   setDisabled(before.getElem());  //이전 플레이어의 토큰 이미지 이벤트 비활성화
+  for(let elem of beforeObstacles){
+    setDisabled(elem); //이전플레이어 장애물 비활성화
+  }
+
+  if(getNowTurn().getId()=='computer'){
+    console.log('컴퓨터 차례!!');
+    player2.moveComputer();
+    changeTurn(getNowTurn(),getNextTurn());
+    return;
+  }
+  
+
+  let afterObstacles=document.querySelectorAll('.'+after.getName()+'Obstacle');
+  for(let elem of afterObstacles){
+    if(elem.dataset.isPositioned=='true') { continue; } // 이미 놓인 장애물은 건들지마
+    setAbled(elem); //현재 플레이어 장애물 활성화
+  }
   setAbled(after.getElem());      //현재 플레이어의 토큰 이미지 이벤트 비활성화
 
 
-  let beforeObstacles=document.querySelectorAll('.'+before.getName()+'Obstacle');
-  for(let elem of beforeObstacles){
-    setDisabled(elem);
-  }
-  let afterObstacles=document.querySelectorAll('.'+after.getName()+'Obstacle');
-  for(let elem of afterObstacles){
-    if(elem.dataset.isPositioned=='true') { continue; }
-    setAbled(elem);
-  }
   //board.printPlayerBoardArr();
   //board.printObstacleBoardArr();
 
@@ -75,14 +111,18 @@ function setAbled(elem){
 
 
 
-function initPlayerEvents(){
+function initPlayerEvents(gameMode){
   player1.getElem().addEventListener('dragstart',dragstartPlayer); //분리?
   player1.getElem().addEventListener('dragend',dragendPlayer); //분리?
-  player2.getElem().addEventListener('dragstart',dragstartPlayer); //분리?
-  player2.getElem().addEventListener('dragend',dragendPlayer); //분리?
+  if(gameMode=='vsPlayer'){
+    //console.log('이벤트리스너들어가');
+    player2.getElem().addEventListener('dragstart',dragstartPlayer); //분리?
+    player2.getElem().addEventListener('dragend',dragendPlayer); //분리?
+  }
+  
 }
-function initObstacleEvents(){
-  let obstacleUnits = document.querySelectorAll('.obstacleUnit');
+function initObstacleEvents(gameMode){
+  let obstacleUnits = document.querySelectorAll('.obstacleUnit'); //컴푸터일때 선택못하게 하던지, 아니면 커서 막든지
   //console.log(obstacleUnits);
   for(let elem of obstacleUnits){
     elem.addEventListener('mousedown',mousedownObstacle); //분리?

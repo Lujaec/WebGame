@@ -10,6 +10,7 @@ export class Player {
             col : col,
         }
         this._elem=null;
+        this._id=name;
     }   
     getName() { return this._name; }
     setName() {} //굳이 필요없는대ㅔ?
@@ -33,10 +34,12 @@ export class Player {
         imgElem.className='imgPlayer';
         this.setElem(imgElem);
     }
-    getId(){ return '#p'+this._pos.row + this._pos.col;}
+    getTableId(){ return '#p'+this._pos.row + this._pos.col;}
     /* setElem(pos){
         this._elem = document.querySelector(`#p${pos.row}${pos.col}`); //이거 p84??
     } */
-
+    getId(){
+        return this._id;
+    }
 }
 
