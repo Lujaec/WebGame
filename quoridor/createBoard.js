@@ -69,11 +69,11 @@ function createObstacleElem(idx,id){
 	elem.alt='obs';
 	return elem;
 }
-export function createPlayerInfo(id){
+export function createPlayerInfo(id,color){
 	let elem=document.createElement('div');
 	elem.id=id+'info';
 	elem.className='playerInfo';
 	document.querySelector('#container').append(elem);
-	//elem.innerHTML = '<img src="./images/white1.png" alt="white"></img>';
-	elem.innerText=id;
+	elem.innerHTML = '<img src=./images/'+color+'.png alt="white"></img>'+id;
+
 }

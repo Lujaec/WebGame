@@ -57,6 +57,13 @@ td.obstacleBoardUnit img{
   width: 611px;
   box-sizing: border-box;
   margin: auto;
-  font-size: 3em;
+  font-size: 2em;
   text-align: center;
+  
+}
+.playerInfo img{
+  margin: auto;
+  height: inherit;
+  object-fit: contain;
+  vertical-align: middle;
 }

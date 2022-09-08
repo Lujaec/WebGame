@@ -1,4 +1,5 @@
 
+
 export class Board{
     constructor(){
 			this._playerBoardArr = Array.from(Array(9), () => Array(9).fill(0));
@@ -31,8 +32,7 @@ export class Board{
 			console.table(this._obstacleBoardArr);
 		}
 	
-		isPossibleObstacle(row, col, dir){ // 놓는곳의 좌우/위아래 같은장애물 조사
-			//console.log(dir);
+		isPossibleObstacle(row, col, dir,p1,p2){ // 놓는곳의 좌우/위아래 같은장애물 조사
 			let direction = {
 				'vertical' : [[1,0], [-1,0]],
 				'horizontal' : [[0,1], [0,-1]],
@@ -51,11 +51,72 @@ export class Board{
 					return false;
 				} 
 			}
-			return true;
+
+
+			this.setObstacleBoardArr(row,col,dir); //임시로 설정
+
+			let flag=1;
+			let minDepth1 = isPlayerReachableBFS.call(this,p1,this.getObstacleBoardArr(),0);
+			let minDepth2 = isPlayerReachableBFS.call(this,p2,this.getObstacleBoardArr(),8);
+			if(minDepth1==false){
+				console.log('player1이 승리지점에 도달할수없습니다');
+				flag=0;
+			} 
+			else{
+				console.log(`player1이 승리지점에 ${minDepth1}번 만에 도달합니다`);
+			}
+			 if(minDepth2==false){
+				console.log('player2이 승리지점에 도달할수없습니다');
+				flag=0;
+			} 
+			else{
+				console.log(`player2이 승리지점에 ${minDepth2}번 만에 도달합니다`);
+			}
+
+			this.setObstacleBoardArr(row,col,-1);  //임시설정 해제
+			return flag;
+
+			function isPlayerReachableBFS(player, board, goalRow){
+
+				let dy = [-1,0,1,0];
+				let dx = [0,1,0,-1];
+				let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
+				let depth=1; //depth가 0인경우는 없다
+				let queue= new Queue();
+				queue.enqueue(player.getPos());
+				visitedArr[player.getPos().row][player.getPos().col]=1;
+
+				while(!queue.empty()){
+					let qs=queue.size();
+					for(let i=0;i<qs;i++){
+						let deq=queue.dequeue();
+						if(deq.row==goalRow){
+							return depth;
+						}
+						for(let j=0;j<4;j++){
+							let newPos={
+								row : +deq.row+ +dy[j],
+								col : +deq.col+ +dx[j],
+							}
+							if(!this.isValidIndex(9,newPos.row,newPos.col)){
+								continue;
+							}
+							if(visitedArr[newPos.row][newPos.col]==0 && this.isPossibleMove(deq,newPos,true)){ //  미방문이면
+								
+								queue.enqueue(newPos);
+								visitedArr[newPos.row][newPos.col]=1;
+							}
+						}
+					}
+					depth++;
+					
+				}
+				return false;
+			}
 		}
 		isPossibleMove(before,after,ignorePlayer){ //점프 코드를 돌리기 위해 플레이어 무시하고 장애물만 검사
-
-			console.log(`(${before.row}, ${before.col})에서 (${after.row}, ${after.col}) `);
+		
+			//console.log(`(${before.row}, ${before.col})에서 (${after.row}, ${after.col}) `);
 			let distance2=(after.row - before.row)**2 + (after.col - before.col)**2;
 			if( distance2!= 1) { //한칸떨어진게 아니면 false
 				if(distance2==2 && isPossibleJumpL.call(this,before,after)){
@@ -89,10 +150,9 @@ export class Board{
 					console.log('플레이어도없는데 왜 L점프하세요?');
 					return false;
 				}
-				console.log(mid);
-				console.log(progress);
-				console.log(this.isPossibleMove(before,mid,true));
-				console.log(this.isPossibleMove(mid,after,true));
+				//console.log(mid);
+				//console.log(progress);
+				
 				if( !this.isValidIndex(9,progress.row,progress.col) || this.isPossibleMove(mid,progress) ){// 진행방향 너머가 인덱스오버가 아니면서 막혀있을떄
 					console.log('플레이어 너머가 맵 밖이거나, I자 점프가 가능하네요');
 					return false;
@@ -195,5 +255,29 @@ export function positionObstacleOnBoard(elem, row, col){
 	else {
 		elem.style.top=row * 70 + 50 + 'px';
 		elem.style.left=col * 70 + 'px';
+	}
+}
+export function positionObstacleCenter(elem, pageX, pageY){
+	elem.style.position = 'absolute';
+  //elem.style.border = '2px solid red';
+	elem.style.left = pageX - elem.offsetWidth / 2 + 'px';
+  elem.style.top = pageY - elem.offsetHeight / 2 + 'px';
+}
+
+class Queue {
+  constructor() {
+    this._arr = [];
+  }
+  enqueue(item) {
+    this._arr.push(item);
+  }
+  dequeue() {
+    return this._arr.shift();  // 시간복잡도가 너무느림
+  }
+	empty(){
+		return this._arr.length==0;
+	}
+	size(){
+		return this._arr.length;
 	}
 }

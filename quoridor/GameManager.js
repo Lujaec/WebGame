@@ -1,5 +1,5 @@
 import {Player} from "./Player.js";
-import {Board, positionObstacleOnBoard} from "./Board.js";
+import {Board, positionObstacleOnBoard, positionObstacleCenter} from "./Board.js";
 //* as events from "./dragEvents.js";
 
 
@@ -42,8 +42,8 @@ export function changeTurn(before,after){
   document.getElementById(after.getName()+'info').style.backgroundColor='red'; //현재턴표시
   console.log('---'+getNowTurn().getName()+' 턴 시작---');
 
-  setDisabled(before.getElem());
-  setAbled(after.getElem());
+  setDisabled(before.getElem());  //이전 플레이어의 토큰 이미지 이벤트 비활성화
+  setAbled(after.getElem());      //현재 플레이어의 토큰 이미지 이벤트 비활성화
 
 
   let beforeObstacles=document.querySelectorAll('.'+before.getName()+'Obstacle');
@@ -85,6 +85,8 @@ function initObstacleEvents(){
   let obstacleUnits = document.querySelectorAll('.obstacleUnit');
   //console.log(obstacleUnits);
   for(let elem of obstacleUnits){
+    elem.addEventListener('mousedown',mousedownObstacle); //분리?
+    elem.addEventListener('mouseup',mouseupObstacle); //분리?
     elem.addEventListener('dragstart',dragstartObstacle); //분리?
     elem.addEventListener('dragend',dragendObstacle); //분리?
     elem.addEventListener('click',clickObstacle); //분리?
@@ -158,6 +160,14 @@ export function dropPlayer(event){
  
 }
 ///////////////////////////////////////////////////////////
+export function mousedownObstacle(event){
+  console.log(this);
+  //positionObstacleCenter(this,event.pageX,event.pageY);
+}
+export function mouseupObstacle(event){
+  console.log('mu');
+  //positionObstacleCenter(this,event.pageX,event.pageY);
+}
 export function dragenterObstacle(event){
   this.style.backgroundColor ='yellow';
 }
@@ -199,16 +209,14 @@ export function dropObstacle(event){
   let row = event.target.dataset.row;
   let col = event.target.dataset.col;
   this.style.backgroundColor ='';
-  if(!board.isPossibleObstacle(row,col,imgElem.dataset.dir)){ //위아래좌우 있어서 못놓음
-    //console.log('noooooooooooooooooooooooooooooooooo');
+  if(!board.isPossibleObstacle(row,col,imgElem.dataset.dir,player1,player2)){ //위아래좌우 있어서 못놓음
     return;
   }
   event.target.append(imgElem);
   event.target.dataset.dir=imgElem.dataset.dir;
   positionObstacleOnBoard(imgElem,row, col); //img요소, row, col //보드에 맞는 css 표시
   imgElem.dataset.isPositioned='true';
-  setDisabled(imgElem);
-  //this.removeEventListener('drop',dropObstacle); // 놓인 곳 이벤트제거
+  setDisabled(imgElem); //놓은곳은 이벤트 제거
   
   board.setObstacleBoardArr(row,col,imgElem.dataset.dir); //obstacle 보드에 장애물 정보 추가
   
