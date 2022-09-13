@@ -194,6 +194,12 @@ export function dropPlayer(event){
 
   event.target.append(imgElem);  //목적지에 추가
   moveTo(beforePos, afterPos, getNowTurn());
+
+  let leftDest1 = board.isPlayerReachableBFS(player1,board.getObstacleBoardArr(),0);
+  let leftDest2 = board.isPlayerReachableBFS(player2,board.getObstacleBoardArr(),8);
+  console.log(`player1은 ${leftDest1}번 만에 도착 가능합니다`);
+  console.log(`player2은 ${leftDest2}번 만에 도착 가능합니다`);
+  
   board.checkWin(getNowTurn());
   console.log('---'+getNowTurn().getName()+' 턴 종료---');
   changeTurn(getNowTurn(),getNextTurn());
@@ -249,7 +255,7 @@ export function dropObstacle(event){
   let row = event.target.dataset.row;
   let col = event.target.dataset.col;
   this.style.backgroundColor ='';
-  let info = board.isPossibleObstacle(row,col,imgElem.dataset.dir,player1,player2);
+  let info = board.isPossibleObstacle(row,col,imgElem.dataset.dir,player1,player2,1);
   console.log(info);
   if(info.isPossible==false){ //위아래좌우 있어서 못놓음
     return;

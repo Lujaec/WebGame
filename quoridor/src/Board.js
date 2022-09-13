@@ -66,8 +66,8 @@ export class Board{
 			this.setObstacleBoardArr(row,col,dir); //임시로 설정
 
 			let flag=1;
-			returnInfo.minDepth1 = isPlayerReachableBFS.call(this,p1,this.getObstacleBoardArr(),0);
-			returnInfo.minDepth2 = isPlayerReachableBFS.call(this,p2,this.getObstacleBoardArr(),8);
+			returnInfo.minDepth1 = this.isPlayerReachableBFS(p1,this.getObstacleBoardArr(),0);
+			returnInfo.minDepth2 = this.isPlayerReachableBFS(p2,this.getObstacleBoardArr(),8);
 			if(returnInfo.minDepth1==false){
 				if(isPrint){
 					console.log('player1이 승리지점에 도달할수없습니다');
@@ -93,45 +93,46 @@ export class Board{
 
 			this.setObstacleBoardArr(row,col,-1);  //임시설정 해제
 			return returnInfo;
+		}
 
-			function isPlayerReachableBFS(player, board, goalRow){
+		isPlayerReachableBFS(player, board, goalRow){
 
-				let dy = [-1,0,1,0];
-				let dx = [0,1,0,-1];
-				let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
-				let depth=0; //depth가 0인경우는 없다
-				let queue= new Queue();
-				queue.enqueue(player.getPos());
-				visitedArr[player.getPos().row][player.getPos().col]=1;
+			let dy = [-1,0,1,0];
+			let dx = [0,1,0,-1];
+			let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
+			let depth=0; //depth가 0인경우는 없다
+			let queue= new Queue();
+			queue.enqueue(player.getPos());
+			visitedArr[player.getPos().row][player.getPos().col]=1;
 
-				while(!queue.empty()){
-					let qs=queue.size();
-					for(let i=0;i<qs;i++){
-						let deq=queue.dequeue();
-						if(deq.row==goalRow){
-							return depth;
+			while(!queue.empty()){
+				let qs=queue.size();
+				for(let i=0;i<qs;i++){
+					let deq=queue.dequeue();
+					if(deq.row==goalRow){
+						return depth;
+					}
+					for(let j=0;j<4;j++){
+						let newPos={
+							row : +deq.row+ +dy[j],
+							col : +deq.col+ +dx[j],
 						}
-						for(let j=0;j<4;j++){
-							let newPos={
-								row : +deq.row+ +dy[j],
-								col : +deq.col+ +dx[j],
-							}
-							if(!this.isValidIndex(9,newPos.row,newPos.col)){
-								continue;
-							}
-							if(visitedArr[newPos.row][newPos.col]==0 && this.isPossibleMove(deq,newPos,true)){ //  미방문이면
-								
-								queue.enqueue(newPos);
-								visitedArr[newPos.row][newPos.col]=1;
-							}
+						if(!this.isValidIndex(9,newPos.row,newPos.col)){
+							continue;
+						}
+						if(visitedArr[newPos.row][newPos.col]==0 && this.isPossibleMove(deq,newPos,true)){ //  미방문이면
+							
+							queue.enqueue(newPos);
+							visitedArr[newPos.row][newPos.col]=1;
 						}
 					}
-					depth++;
-					
 				}
-				return false;
+				depth++;
+				
 			}
+			return false;
 		}
+
 		isPossibleMove(before,after,ignorePlayer){ //점프 코드를 돌리기 위해 플레이어 무시하고 장애물만 검사
 		
 			//console.log(`(${before.row}, ${before.col})에서 (${after.row}, ${after.col}) `);
