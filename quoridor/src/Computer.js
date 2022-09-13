@@ -38,8 +38,35 @@ export class Computer {
   getId(){
     return this._id;
   }
-  moveComputer(){
+  moveComputer(board,player1,player2){
     console.log('컴퓨터 움직이자');
+    let bestChoice=null;
+    bruteforceObstacle(board,player1,player2);
+
+
+
+    function bruteforceObstacle(board,player1,player2){ //모든 위치에 장애물을 놓아서 컴퓨터 vs 플레이어의 이동거리 증가 비교
+      let obsBoard = board.getObstacleBoardArr();
+      console.log(player1,player2);
+      for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+          if(obsBoard[i][j]!=-1){ //보드에 이미 장애물이 있는 경우
+            continue;
+          }
+          let dirArr=['vertical', 'horizontal'];
+          for(let k=0;k<2;k++){
+            let obsInfo = board.isPossibleObstacle(i,j,dirArr[k],player1,player2,0); 
+            console.log(`(${i},${j})에 설치해봄`);
+            console.log(obsInfo);
+          }
+          
+          
+          
+          
+        }
+      }
+    }
   }
+  
 }
 

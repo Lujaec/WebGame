@@ -11,13 +11,13 @@ export class Board{
 				elem.dataset.value=
 			} */
     }
-		getplayerBoardArr(){ //set없어도?
+		getplayerBoardArr(){ 
 			return this._boardArr;
 		}
-		getObstacleBoardArr(){ //set없어도?
+		getObstacleBoardArr(){ 
 			return this._obstacleBoardArr;
 		}
-		setPlayerBoardArr(before, after, who){ //비포애프터로해
+		setPlayerBoardArr(before, after, who){ 
 			this._playerBoardArr[before.row][before.col]=0;
 			this._playerBoardArr[after.row][after.col]=who;
 
@@ -32,12 +32,19 @@ export class Board{
 			console.table(this._obstacleBoardArr);
 		}
 	
-		isPossibleObstacle(row, col, dir,p1,p2){ // 놓는곳의 좌우/위아래 같은장애물 조사
+		isPossibleObstacle(row, col, dir,p1,p2,isPrint){ // 놓는곳의 좌우/위아래 같은장애물 조사
+			let returnInfo = {
+				isPossible : true,
+				minDepth1 : -1,
+				minDepth2 : -1,
+			}
 			let direction = {
 				'vertical' : [[1,0], [-1,0]],
 				'horizontal' : [[0,1], [0,-1]],
 			}
-			console.log(`(${row}, ${col})에 dir 장애물 설치`);
+			if(isPrint){
+				console.log(`(${row}, ${col})에 dir 장애물 설치`);
+			}
 			for(let i=0;i<2;i++){
 				let newRow=+row+direction[dir][i][0];
 				let newCol=+col+direction[dir][i][1];
@@ -47,8 +54,11 @@ export class Board{
 					continue;
 				}
 				if(this._obstacleBoardArr[newRow][newCol]==dir){
-					console.log('겹쳐서 설치할수 없습니다');
-					return false;
+					if(isPrint){
+						console.log('겹쳐서 설치할수 없습니다');
+					}
+					returnInfo.isPossible = false;
+					return returnInfo;
 				} 
 			}
 
@@ -56,25 +66,33 @@ export class Board{
 			this.setObstacleBoardArr(row,col,dir); //임시로 설정
 
 			let flag=1;
-			let minDepth1 = isPlayerReachableBFS.call(this,p1,this.getObstacleBoardArr(),0);
-			let minDepth2 = isPlayerReachableBFS.call(this,p2,this.getObstacleBoardArr(),8);
-			if(minDepth1==false){
-				console.log('player1이 승리지점에 도달할수없습니다');
-				flag=0;
+			returnInfo.minDepth1 = isPlayerReachableBFS.call(this,p1,this.getObstacleBoardArr(),0);
+			returnInfo.minDepth2 = isPlayerReachableBFS.call(this,p2,this.getObstacleBoardArr(),8);
+			if(returnInfo.minDepth1==false){
+				if(isPrint){
+					console.log('player1이 승리지점에 도달할수없습니다');
+				}
+				returnInfo.isPossible=false;
 			} 
 			else{
-				console.log(`player1이 승리지점에 ${minDepth1}번 만에 도달합니다`);
+				if(isPrint){
+					console.log(`player1이 승리지점에 ${returnInfo.minDepth1}번 만에 도달합니다`);
+				}
 			}
-			 if(minDepth2==false){
-				console.log('player2이 승리지점에 도달할수없습니다');
-				flag=0;
+			if(returnInfo.minDepth2==false){
+				if(isPrint){
+					console.log('player2이 승리지점에 도달할수없습니다');
+				}
+				returnInfo.isPossible=false;
 			} 
 			else{
-				console.log(`player2이 승리지점에 ${minDepth2}번 만에 도달합니다`);
+				if(isPrint){
+					console.log(`player2이 승리지점에 ${returnInfo.minDepth2}번 만에 도달합니다`);	
+				}
 			}
 
 			this.setObstacleBoardArr(row,col,-1);  //임시설정 해제
-			return flag;
+			return returnInfo;
 
 			function isPlayerReachableBFS(player, board, goalRow){
 

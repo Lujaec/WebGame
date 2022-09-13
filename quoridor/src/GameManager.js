@@ -75,9 +75,9 @@ export function changeTurn(before,after){
     setDisabled(elem); //이전플레이어 장애물 비활성화
   }
 
-  if(getNowTurn().getId()=='computer'){
+  if(getNowTurn().getId()=='computer'){ //컴퓨터 차례
     console.log('컴퓨터 차례!!');
-    player2.moveComputer();
+    player2.moveComputer(board,player1,player2);
     changeTurn(getNowTurn(),getNextTurn());
     return;
   }
@@ -201,7 +201,7 @@ export function dropPlayer(event){
 }
 ///////////////////////////////////////////////////////////
 export function mousedownObstacle(event){
-  console.log(this);
+  //console.log(this);
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function mouseupObstacle(event){
@@ -249,7 +249,9 @@ export function dropObstacle(event){
   let row = event.target.dataset.row;
   let col = event.target.dataset.col;
   this.style.backgroundColor ='';
-  if(!board.isPossibleObstacle(row,col,imgElem.dataset.dir,player1,player2)){ //위아래좌우 있어서 못놓음
+  let info = board.isPossibleObstacle(row,col,imgElem.dataset.dir,player1,player2);
+  console.log(info);
+  if(info.isPossible==false){ //위아래좌우 있어서 못놓음
     return;
   }
   event.target.append(imgElem);
