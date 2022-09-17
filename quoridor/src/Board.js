@@ -97,8 +97,8 @@ export class Board{
 
 		isPlayerReachableBFS(player, board, goalRow){
 
-			let dy = [-1,0,1,0];
-			let dx = [0,1,0,-1];
+			const dy = [-1,0,1,0];
+			const dx = [0,1,0,-1];
 			let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
 			let depth=0; //depth가 0인경우는 없다
 			let queue= new Queue();
@@ -300,7 +300,7 @@ class QueueSlow {
 		return this._arr.length;
 	}
 }
-class Queue { //rear에 추가, front에서 뺌
+export class Queue { //rear에 추가, front에서 뺌
   constructor() {
     this.storage = {};
     this.front = 0;

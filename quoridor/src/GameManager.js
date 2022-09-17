@@ -77,7 +77,12 @@ export function changeTurn(before,after){
 
   if(getNowTurn().getId()=='computer'){ //컴퓨터 차례
     console.log('컴퓨터 차례!!');
-    player2.moveComputer(board,player1,player2);
+   
+    let computerMove = player2.getComputerMove(board,player1,player2);
+    console.log(getNowTurn().getPos());
+    console.log(computerMove);
+    console.log(getNowTurn());
+    moveTo(getNowTurn().getPos(), computerMove, getNowTurn()); //일안한다 이미지옮겨
     changeTurn(getNowTurn(),getNextTurn());
     return;
   }
