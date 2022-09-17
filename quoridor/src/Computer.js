@@ -15,6 +15,9 @@ export class Computer {
   getName() { return this._name; }
   setName() {} //굳이 필요없는대ㅔ?
 
+  getColor() { return this._color; }
+  setColor() {} //굳이 필요없는대ㅔ?
+
   getLeftObstacles() { return this._leftObstacles ;}
   setLeftObstacles(value_Number){ this._leftObstacles = value_Number;}
 
@@ -39,15 +42,17 @@ export class Computer {
     return this._id;
   }
   getComputerMove(board,player1,player2){
-    console.log('컴퓨터 움직이자');
+    
     let bestChoice=null;
     let resultBruteforce = bruteforceObstacle(board,player1,player2);
     console.log(resultBruteforce);
-    if(resultBruteforce.awayFarthest==0){ //플레이어가 더 멀어지지않음 -> 움직이기
+    if(resultBruteforce.awayFarthest<8977987){ //플레이어가 더 멀어지지않음 -> 움직이기
       //bfs 백트래킹하기
-      let move = getMoveBFS(board,player2);
-      console.log('computer move to' + move.row + move.col);
-      return move;
+      let computerBefore = player2.getPos();
+      let computerAfter = getMoveBFS(board,player2);
+      //console.log('computer move '+computerBefore.row+computerBefore.col + ' to ' + computerAfter.row+computerAfter.col);
+  
+      return computerAfter;
     }
 
 
@@ -60,13 +65,13 @@ export class Computer {
       };
       let bestChoice = { 
         awayFarthest : 0, //플레이어가 최고 멀어지는 거리
-        distancePlayerObstacle : 987654321, //플레이어와 장애물 사이거리 최소로
+        minDistancePlayerObstacle : 987654321, //플레이어와 장애물 사이거리 최소로
         row : null,
         col : null,
         dir : null,
       };
-      console.log('player1 원래 도달거리 '+ originDistance.player);
-      console.log('computer 원래 도달거리 '+ originDistance.computer);
+      //console.log('player1 원래 도달거리 '+ originDistance.player);
+      //console.log('computer 원래 도달거리 '+ originDistance.computer);
 
       for(let i=0;i<8;i++){
         for(let j=0;j<8;j++){
@@ -95,15 +100,15 @@ export class Computer {
 
             if(playerFurtherAway > bestChoice.awayFarthest){ //플레이어를 가장 멀어지게 하는 경우
               bestChoice.awayFarthest = playerFurtherAway;
-              bestChoice.distancePlayerObstacle = distacePO;
+              bestChoice.minDistancePlayerObstacle = distacePO;
               bestChoice.row = i;
               bestChoice.col = j;
               bestChoice.dir = dirArr[k];
             }
             else if(playerFurtherAway == bestChoice.awayFarthest  //멀어지는게 같으면 가까운곳으로
-                    && distacePO < bestChoice.distancePlayerObstacle){
+                    && distacePO < bestChoice.minDistancePlayerObstacle){
               bestChoice.awayFarthest = playerFurtherAway;
-              bestChoice.distancePlayerObstacle = distacePO;
+              bestChoice.minDistancePlayerObstacle = distacePO;
               bestChoice.row = i;
               bestChoice.col = j;
               bestChoice.dir = dirArr[k];
@@ -127,7 +132,9 @@ export class Computer {
       let initPos = {
         row : player2.getPos().row,
         col : player2.getPos().col,
-        firstDir : -1, //맨 처음 움직인 방향
+        
+        firstRow : -1, //맨 처음 움직인 자표
+        firstCol : -1. //맨 처음 움직인 자표
       }
       queue.enqueue(initPos);
       while(!queue.empty()){
@@ -135,20 +142,32 @@ export class Computer {
         for(let i=0;i<qs;i++){
           let deq = queue.dequeue();
           if(deq.row==8){
-           
-						//return deq.firstDir;
             return {
-              row : player2.getPos().row + dy[deq.firstDir],
-              col : player2.getPos().col + dx[deq.firstDir],
+              row : firstRow,
+              col : firstCol,
             }
 					}
           for(let j=0;j<4;j++){
 						let newPos={
 							row : +deq.row+ +dy[j],
 							col : +deq.col+ +dx[j],
-              //dir이 첫 움직임이면 설정
-              firstDir : (deq.firstDir == -1 ? j : deq.firstDir),
 						}
+            if(deq.firstRow==-1){  //dir이 첫 움직임이면 설정
+              
+              if(newPos.row == player1.getPos().row && newPos.col == player1.getPos().col){
+                //첫 움직임이 상대 토큰위면, 넘어가는 방향
+                for(let k=0;k<4;k++){
+                  let jumpPos = {
+                    row : newPos.row + dy[k],
+                    col : newPos.col + dx[k],
+                  }
+                }
+              } 
+              else { // 그외는 그냥 그대로
+                newPos.firstDir = j;
+              }
+            }
+
 						if(!board.isValidIndex(9,newPos.row,newPos.col)){
 							continue;
 						}

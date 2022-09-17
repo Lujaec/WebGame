@@ -15,6 +15,9 @@ export class Player {
     getName() { return this._name; }
     setName() {} //굳이 필요없는대ㅔ?
 
+    getColor() { return this._color; }
+    setColor() {} //굳이 필요없는대ㅔ?
+
     getLeftObstacles() { return this._leftObstacles ;}
     setLeftObstacles(value_Number){ this._leftObstacles = value_Number;}
 

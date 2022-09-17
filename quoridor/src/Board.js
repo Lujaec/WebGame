@@ -7,9 +7,6 @@ export class Board{
 			//table ->보드 참ㄴ조
 			let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
 			let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
-			/* for(let elem of playerBoardUnits){
-				elem.dataset.value=
-			} */
     }
 		getplayerBoardArr(){ 
 			return this._boardArr;
@@ -18,6 +15,7 @@ export class Board{
 			return this._obstacleBoardArr;
 		}
 		setPlayerBoardArr(before, after, who){ 
+			//console.log('before??'+before.row+before.col);
 			this._playerBoardArr[before.row][before.col]=0;
 			this._playerBoardArr[after.row][after.col]=who;
 

@@ -62,12 +62,10 @@ export function gameStartComputer(){ //1인용플레이
 export function changeTurn(before,after){
   setNowTurn(after);
   setNextTurn(before);
-  //console.log(getNowTurn());
-  //console.log(getNextTurn());
 
   document.getElementById(before.getName()+'info').style.backgroundColor='';
   document.getElementById(after.getName()+'info').style.backgroundColor='red'; //현재턴표시
-  console.log('---'+getNowTurn().getId()+' 턴 시작---');
+  console.log('----------'+getNowTurn().getId()+' 턴 시작----------');
 
   let beforeObstacles=document.querySelectorAll('.'+before.getName()+'Obstacle');
   setDisabled(before.getElem());  //이전 플레이어의 토큰 이미지 이벤트 비활성화
@@ -76,14 +74,12 @@ export function changeTurn(before,after){
   }
 
   if(getNowTurn().getId()=='computer'){ //컴퓨터 차례
-    console.log('컴퓨터 차례!!');
-   
     let computerMove = player2.getComputerMove(board,player1,player2);
-    console.log(getNowTurn().getPos());
-    console.log(computerMove);
-    console.log(getNowTurn());
+    //sleep(1000);
+    //
     moveTo(getNowTurn().getPos(), computerMove, getNowTurn()); //일안한다 이미지옮겨
-    changeTurn(getNowTurn(),getNextTurn());
+    changeTurn(getNowTurn(),getNextTurn()); //재귀스택?
+    
     return;
   }
   
@@ -95,13 +91,18 @@ export function changeTurn(before,after){
   }
   setAbled(after.getElem());      //현재 플레이어의 토큰 이미지 이벤트 비활성화
 
-
-  //board.printPlayerBoardArr();
-  //board.printObstacleBoardArr();
-
-  //console.log(player1);
-  //console.log(player2);
   
+}
+function moveTo(before, after, who){
+  console.log(who.getColor()+' move '+before.row+before.col+' to ' + after.row+after.col);
+  board.setPlayerBoardArr(before,after,who);
+  who.setPos(after.row,after.col); //순서?
+  let imgElem=document.getElementById('img'+who.getColor());  //옮길 이미지 요소
+
+  let playerBoardId='p'+after.row+after.col;
+  
+  document.getElementById(playerBoardId).append(imgElem);
+  board.printPlayerBoardArr();
 }
 
 function setDisabled(elem){
@@ -111,9 +112,6 @@ function setAbled(elem){
   elem.style.cursor ='pointer';
   elem.style.pointerEvents = 'auto';
 }
-
-
-
 
 
 function initPlayerEvents(gameMode){
@@ -138,22 +136,13 @@ function initObstacleEvents(gameMode){
 
   }
 }
-function moveTo(before, after, who){
-  who.setPos(after.row,after.col);
-  board.setPlayerBoardArr(before,after,who);
-  //board.printPlayerBoardArr();
-}
-
 export function dragenterPlayer(event){
   this.style.backgroundColor ='yellow';
 }
 export function dragleavePlayer(event){
   this.style.backgroundColor ='';
 }
-export function dragstartPlayer(event){ //플레이어를 드래그하면 이벤트를 생기게?? //여기에 이벤트4개 넣어랴?
-
-  //console.log(this.id + ' dragstart!')
-  event.dataTransfer.setData('imgId',event.target.id);
+export function dragstartPlayer(event){ 
   event.dataTransfer.setData('beforeRow',getNowTurn().getPos().row);
   event.dataTransfer.setData('beforeCol',getNowTurn().getPos().col);
   let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
@@ -179,7 +168,6 @@ export function dragoverPlayer(event){
 }
 export function dropPlayer(event){
   event.preventDefault();
-  let data=event.dataTransfer.getData('imgId'); //옮길 이미지요소의 id
   let beforeRow=event.dataTransfer.getData('beforeRow');
   let beforeCol=event.dataTransfer.getData('beforeCol');
   let beforePos = { //플레이어의 드롭 전 위치
@@ -190,15 +178,15 @@ export function dropPlayer(event){
     row : this.dataset.row,
     col : this.dataset.col,
   }
-  let imgElem=document.getElementById(data);  //옮길 이미지 요소
+
   this.style.backgroundColor ='';
   if(!board.isPossibleMove(beforePos,afterPos,0)){
-    //console.log('playermovenoooooooooooooooo');
     return;
   }
-
-  event.target.append(imgElem);  //목적지에 추가
+  
+  
   moveTo(beforePos, afterPos, getNowTurn());
+  //board.printPlayerBoardArr();
 
   let leftDest1 = board.isPlayerReachableBFS(player1,board.getObstacleBoardArr(),0);
   let leftDest2 = board.isPlayerReachableBFS(player2,board.getObstacleBoardArr(),8);
@@ -211,12 +199,12 @@ export function dropPlayer(event){
  
 }
 ///////////////////////////////////////////////////////////
-export function mousedownObstacle(event){
+export function mousedownObstacle(event){ //미사용
   //console.log(this);
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
-export function mouseupObstacle(event){
-  console.log('mu');
+export function mouseupObstacle(event){ //미사용
+  //console.log('mu');
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function dragenterObstacle(event){
@@ -252,7 +240,7 @@ export function dragendObstacle(event){ //플레이어를 드래그끝내면
 export function dragoverObstacle(event){
   event.preventDefault(); 
 }
-export function dropObstacle(event){ 
+export function dropObstacle(event){ //이거동 imgelem아니고 좌표애서
   event.preventDefault();
   //console.log(this.id + ' drop!');
   let data=event.dataTransfer.getData('imgId');
@@ -277,7 +265,7 @@ export function dropObstacle(event){
   changeTurn(getNowTurn(),getNextTurn());
 }
 export function clickObstacle(event){
-  console.log('clikck!!');
+ // console.log('clikck!!');
   //console.log(event.target.src);
   if(event.target.dataset.dir=='vertical'){
     event.target.src="./images/obstacleHorizontal.png";
@@ -288,4 +276,8 @@ export function clickObstacle(event){
     event.target.dataset.dir='vertical';
   }
 
+}
+function sleep(ms) {
+  const wakeUpTime = Date.now() + ms;
+  while (Date.now() < wakeUpTime) {}
 }
