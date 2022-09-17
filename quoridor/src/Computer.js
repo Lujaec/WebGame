@@ -51,7 +51,14 @@ export class Computer {
       let computerAfter = getMoveBFS(board,player1,player2);
       return computerAfter;
     }
-    
+    else { //장애물 설치
+      return {
+        row : resultBruteforce.row,
+        col : resultBruteforce.col,
+        dir : resultBruteforce.dir,
+        select : 'obs',
+      }
+    }
 
     function bruteforceObstacle(board,player1,player2){ //모든 위치에 장애물을 놓아서 컴퓨터 vs 플레이어의 이동거리 증가 비교
       let obsBoard = board.getObstacleBoardArr();
@@ -77,7 +84,12 @@ export class Computer {
           }
           let dirArr=['vertical', 'horizontal'];
           for(let k=0;k<2;k++){
-            let obsInfo = board.isPossibleObstacle(i,j,dirArr[k],player1,player2,0); 
+            let obstmp ={
+              row : i,
+              col : j,
+              dir : dirArr[k],
+            };
+            let obsInfo = board.isPossibleObstacle(obstmp,player1,player2,0); 
             if(obsInfo.isPossible ==false){ //겹침으로 설치 불가능
               continue;
             }
@@ -175,6 +187,7 @@ export class Computer {
             return {
               row : deq.firstRow,
               col : deq.firstCol,
+              select : 'move', //컴퓨터의 선택
             }
 					}
           for(let j=0;j<4;j++){

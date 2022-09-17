@@ -30,7 +30,7 @@ export class Board{
 			console.table(this._obstacleBoardArr);
 		}
 	
-		isPossibleObstacle(row, col, dir,p1,p2,isPrint){ // 놓는곳의 좌우/위아래 같은장애물 조사
+		isPossibleObstacle(obsInfo,p1,p2,isPrint){ // 놓는곳의 좌우/위아래 같은장애물 조사
 			let returnInfo = {
 				isPossible : true,
 				minDepth1 : -1,
@@ -41,17 +41,16 @@ export class Board{
 				'horizontal' : [[0,1], [0,-1]],
 			}
 			if(isPrint){
-				console.log(`(${row}, ${col})에 dir 장애물 설치`);
+				console.log(`(${obsInfo.row}, ${obsInfo.col})에 ${obsInfo.dir} 장애물 설치`);
 			}
 			for(let i=0;i<2;i++){
-				let newRow=+row+direction[dir][i][0];
-				let newCol=+col+direction[dir][i][1];
-				//console.log(newRow,newCol);
-				//console.log(this._obstacleBoardArr[newRow][newCol]);
+				let newRow= +obsInfo.row + direction[obsInfo.dir][i][0];
+				let newCol= +obsInfo.col + direction[obsInfo.dir][i][1];
+			
 				if(!this.isValidIndex(8,newRow,newCol)){ //범위 밖은 조사안함
 					continue;
 				}
-				if(this._obstacleBoardArr[newRow][newCol]==dir){
+				if(this._obstacleBoardArr[newRow][newCol]==obsInfo.dir){
 					if(isPrint){
 						console.log('겹쳐서 설치할수 없습니다');
 					}
@@ -61,7 +60,7 @@ export class Board{
 			}
 
 
-			this.setObstacleBoardArr(row,col,dir); //임시로 설정
+			this.setObstacleBoardArr(obsInfo.row,obsInfo.col,obsInfo.dir); //임시로 설정
 
 			let flag=1;
 			returnInfo.minDepth1 = this.isPlayerReachableBFS(p1,this.getObstacleBoardArr(),0);
@@ -89,7 +88,7 @@ export class Board{
 				}
 			}
 
-			this.setObstacleBoardArr(row,col,-1);  //임시설정 해제
+			this.setObstacleBoardArr(obsInfo.row,obsInfo.col,-1);  //임시설정 해제
 			return returnInfo;
 		}
 
