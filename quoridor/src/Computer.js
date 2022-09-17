@@ -41,20 +41,17 @@ export class Computer {
   getId(){
     return this._id;
   }
-  getComputerMove(board,player1,player2){
-    
-    let bestChoice=null;
+  getComputerChoice(board,player1,player2){
+
     let resultBruteforce = bruteforceObstacle(board,player1,player2);
     console.log(resultBruteforce);
-    if(resultBruteforce.awayFarthest<8977987){ //플레이어가 더 멀어지지않음 -> 움직이기
+    if(resultBruteforce.awayFarthest<2){ //플레이어가 2칸이상멀어지지않음 -> 움직이기
       //bfs 백트래킹하기
       let computerBefore = player2.getPos();
-      let computerAfter = getMoveBFS(board,player2);
-      //console.log('computer move '+computerBefore.row+computerBefore.col + ' to ' + computerAfter.row+computerAfter.col);
-  
+      let computerAfter = getMoveBFS(board,player1,player2);
       return computerAfter;
     }
-
+    
 
     function bruteforceObstacle(board,player1,player2){ //모든 위치에 장애물을 놓아서 컴퓨터 vs 플레이어의 이동거리 증가 비교
       let obsBoard = board.getObstacleBoardArr();
@@ -122,57 +119,77 @@ export class Computer {
       }
       return bestChoice;
     }
-    function getMoveBFS(board,player2){ //컴퓨터가 처음 이동할 위치 찾기
+    function getMoveBFS(board,player1,player2){ //컴퓨터(p2)가 처음 이동할 위치 찾기
       const dy = [1,0,-1,0]; //아래,좌,위,우
       const dx = [0,-1,0,1];
-      
+      const p1Pos = player1.getPos();
+      const p2Pos = player2.getPos();
       let visitedArr = Array.from(Array(9), () => Array(9).fill(0));
-      let depth=0;
+      let depth=1; //상하좌우부터 시작
       let queue= new Queue();
-      let initPos = {
-        row : player2.getPos().row,
-        col : player2.getPos().col,
-        
-        firstRow : -1, //맨 처음 움직인 자표
-        firstCol : -1. //맨 처음 움직인 자표
+     
+      visitedArr[p2Pos.row][p2Pos.col]=1;
+      
+      for(let i=0;i<4;i++){ //depth 1까지는 큐-런타임전처리
+        let initPos={
+          row : p2Pos.row + dy[i],
+          col : p2Pos.col + dx[i],
+          firstRow : p2Pos.row + dy[i], //첫 움직임
+          firstCol : p2Pos.col + dx[i], //첫 움직임
+        }
+        if(!board.isValidIndex(9,initPos.row,initPos.col)){
+          continue;
+        }
+        //첫 상하좌우가 상대편이 아니거, 이동 가능하면
+        if(!(initPos.row == p1Pos.row && initPos.col == p1Pos.col) 
+            && board.isPossibleMove(p2Pos,initPos,true)){
+          queue.enqueue(initPos);
+          continue;
+        }
+        //첫 상하좌우가 상대편이라 점프하는 경우
+        for(let j=0;j<4;j++){
+          let initPos2={
+            row : initPos.row + dy[j],
+            col : initPos.col + dx[j],
+            firstRow : initPos.row + dy[j], //첫 움직임
+            firstCol : initPos.col + dx[j], //첫 움직임
+          }
+          //L I점프아니고 나로 돌아온 경우는 아님
+          if(initPos2.row == p2Pos.row && initPos2.col == p2Pos.col){
+            continue;
+          }
+          console.log(''+p2Pos.row+p2Pos.col+'에서'+initPos2.row+initPos2.col+'점프');
+
+          if(board.isPossibleMove(p2Pos,initPos2,0)){
+            queue.enqueue(initPos2);
+          }
+        }
       }
-      queue.enqueue(initPos);
+
       while(!queue.empty()){
         let qs=queue.size();
         for(let i=0;i<qs;i++){
           let deq = queue.dequeue();
           if(deq.row==8){
+            console.log(deq);
             return {
-              row : firstRow,
-              col : firstCol,
+              row : deq.firstRow,
+              col : deq.firstCol,
             }
 					}
           for(let j=0;j<4;j++){
 						let newPos={
 							row : +deq.row+ +dy[j],
 							col : +deq.col+ +dx[j],
+              firstRow : deq.firstRow,
+              firstCol : deq.firstCol,
 						}
-            if(deq.firstRow==-1){  //dir이 첫 움직임이면 설정
-              
-              if(newPos.row == player1.getPos().row && newPos.col == player1.getPos().col){
-                //첫 움직임이 상대 토큰위면, 넘어가는 방향
-                for(let k=0;k<4;k++){
-                  let jumpPos = {
-                    row : newPos.row + dy[k],
-                    col : newPos.col + dx[k],
-                  }
-                }
-              } 
-              else { // 그외는 그냥 그대로
-                newPos.firstDir = j;
-              }
-            }
-
+          
 						if(!board.isValidIndex(9,newPos.row,newPos.col)){
 							continue;
 						}
 						if(visitedArr[newPos.row][newPos.col]==0 && board.isPossibleMove(deq,newPos,true)){ //  미방문이면
-							
+
 							queue.enqueue(newPos);
 							visitedArr[newPos.row][newPos.col]=1;
 						}

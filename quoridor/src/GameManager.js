@@ -74,11 +74,15 @@ export function changeTurn(before,after){
   }
 
   if(getNowTurn().getId()=='computer'){ //컴퓨터 차례
-    let computerMove = player2.getComputerMove(board,player1,player2);
+    let computerChoice = player2.getComputerChoice(board,player1,player2);
     //sleep(1000);
-    //
-    moveTo(getNowTurn().getPos(), computerMove, getNowTurn()); //일안한다 이미지옮겨
-    changeTurn(getNowTurn(),getNextTurn()); //재귀스택?
+  if(typeof(computerChoice)=='object'){ //움직임 존재
+    moveTo(getNowTurn().getPos(), computerChoice, getNowTurn()); 
+  }
+  else { //장애물 설치
+    console.log('장애물설치');
+  }
+  changeTurn(getNowTurn(),getNextTurn()); //재귀스택?
     
     return;
   }
