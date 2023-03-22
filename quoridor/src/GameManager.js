@@ -239,7 +239,9 @@ export function mouseupObstacle(event){ //미사용
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function dragenterObstacle(event){
-  this.style.backgroundColor ='yellow';
+  this.style.backgroundColor ='red';
+  let obsDir=event.dataTransfer.getData('obsDir');
+  console.log(obsDir);
 }
 export function dragleaveObstacle(event){
   this.style.backgroundColor ='';
@@ -247,6 +249,8 @@ export function dragleaveObstacle(event){
 export function dragstartObstacle(event){
   
   event.dataTransfer.setData('imgId',event.target.id);
+  event.dataTransfer.setData('obsDir',event.target.dataset.dir);
+ 
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
     if(elem.dataset.dir!='none'){ //장애물이 존재하는 셀에는 이벤트추가안함.
