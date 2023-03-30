@@ -11,6 +11,10 @@ export let computer = new Computer("player2", "white",0,4);
 const OBS_COLOR = '#c9a85c';
 let _nowTurn = null;
 let _nextTurn = null;
+let dragedDir = null;
+let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸의 id
+
+
 function setNowTurn(player){ _nowTurn=player;}
 function getNowTurn(){ return _nowTurn;}
 
@@ -111,49 +115,38 @@ function moveTo(before, after, who){
   document.getElementById(playerBoardId).append(imgElem);
   //board.printPlayerBoardArr();
 }
-function setObstacleTo(pos, imgId){
-  console.log(imgId);
-  console.log(pos);
-  let imgElem=document.getElementById(imgId);  //옮길 이미지 요소
-  imgElem.remove(); //이미지 없애고 칸을색칠하기
-
+function setObstacleTo(pos, imgId){ //장애물을 옮기는 함수
   
-
-  //아무거나 가져왓으니가 방향설정
-  // if(pos.dir=='vertical'){
-  //   imgElem.src="./images/obstacleVertical.png";
-  //   imgElem.dataset.dir='vertical';
-  // }
-  // else {
-  //   imgElem.src="./images/obstacleHorizontal.png";
-  //   imgElem.dataset.dir='horizontal';
-  // }
-
   let obstacleBoardId='o'+pos.row+pos.col;
-  let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
+  // let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
+  let boardElem = document.getElementById(obstacleBoardId);
+  
+  document.getElementById(imgId).remove(); //이미지 없애고 칸을색칠하자
+
   if(pos.dir=='vertical'){
     obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
     obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
+    boardElem.style.borderTopColor=OBS_COLOR;
+    boardElem.style.borderBottomColor=OBS_COLOR;
   }
   else {
     obstacleBoardAdjId[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
     obstacleBoardAdjId[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
-   
+    boardElem.style.borderLeftColor=OBS_COLOR;
+    boardElem.style.borderRightColor=OBS_COLOR;
   }
   console.log(obstacleBoardAdjId[0]);
   console.log(obstacleBoardAdjId[1]);
 
-  document.getElementById(obstacleBoardId).style.backgroundColor=OBS_COLOR; //색 설정
+  boardElem.style.backgroundColor=OBS_COLOR; //색 설정
   document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor=OBS_COLOR; //색 설정
   document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=OBS_COLOR; //색 설정
- 
-  document.getElementById(obstacleBoardId).dataset.dir=pos.dir;
- 
-  //positionObstacleOnBoard(imgElem,pos.row,pos.col); //img요소, row, col //보드에 맞는 css 표시
-  // imgElem.dataset.isPositioned='true';
-  // setDisabled(imgElem); //놓은곳은 이벤트 제거
+  
+  boardElem.dataset.dir=pos.dir;
   
   board.setObstacleBoardArr(pos.row,pos.col,pos.dir); //obstacle
+
+  setDisabled(boardElem); //?없ㅇ도 266행때문에 상관업슴. dir=none이아니먄!!
 }
 
 function setDisabled(elem){
@@ -260,17 +253,35 @@ export function mouseupObstacle(event){ //미사용
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function dragenterObstacle(event){
+  event.preventDefault();
+  
+  let pos={
+    row : this.dataset.row,
+    col : this.dataset.col,
+  };
+
+  if(dragedDir=='vertical'){
+    obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
+    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
+  }
+  else {
+    obstacleBoardAdjId[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
+    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
+  }
   this.style.backgroundColor ='red';
-  let obsDir=event.dataTransfer.getData('obsDir');
-  console.log(obsDir); //출력안됨
+  document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor='red'; //색 설정
+  document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor='red'; //색 설정
 }
 export function dragleaveObstacle(event){
   this.style.backgroundColor ='';
+  document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor=''; //색 설정
+  document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=''; //색 설정
 }
 export function dragstartObstacle(event){
   
   event.dataTransfer.setData('imgId',event.target.id);
   event.dataTransfer.setData('obsDir',event.target.dataset.dir);
+  dragedDir=event.target.dataset.dir; //현재 드래그객체 방향
  
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
