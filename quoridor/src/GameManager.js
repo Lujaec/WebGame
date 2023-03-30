@@ -121,7 +121,7 @@ function setObstacleTo(pos, imgId){ //장애물을 옮기는 함수
   // let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
   let boardElem = document.getElementById(obstacleBoardId);
   
-  document.getElementById(imgId).remove(); //이미지 없애고 칸을색칠하자
+  //document.getElementById(imgId).remove(); //이미지 없애고 칸을색칠하자
 
   if(pos.dir=='vertical'){
     obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
@@ -173,12 +173,13 @@ function initObstacleEvents(gameMode){
   let obstacleUnits = document.querySelectorAll('.obstacleUnit'); //컴푸터일때 선택못하게 하던지, 아니면 커서 막든지
   //console.log(obstacleUnits);
   for(let elem of obstacleUnits){
-    elem.addEventListener('mousedown',mousedownObstacle); //분리? 미사영
-    elem.addEventListener('mouseup',mouseupObstacle); //분리? 미사용
-    elem.addEventListener('dragstart',dragstartObstacle); //분리?
-    elem.addEventListener('dragend',dragendObstacle); //분리?
-    elem.addEventListener('click',clickObstacle); //분리?
+    //elem.addEventListener('mousedown',mousedownObstacle); //분리? 미사영
+    //elem.addEventListener('mouseup',mouseupObstacle); //분리? 미사용
+    //elem.addEventListener('dragstart',dragstartObstacle); //분리?
+    //elem.addEventListener('dragend',dragendObstacle); //분리?
+    //elem.addEventListener('click',clickObstacle); //분리?
 
+    elem.onmousedown=mousedownObstacle;
   }
 }
 export function dragenterPlayer(event){
@@ -244,23 +245,134 @@ export function dropPlayer(event){
  
 }
 ///////////////////////////////////////////////////////////
+let currentDroppable = null;
 export function mousedownObstacle(event){ //미사용
-  //console.log(this);
-  //positionObstacleCenter(this,event.pageX,event.pageY);
+   event.target.ondragstart= () => false;
+  event.target.style.position = 'absolute'; //기본값 ""
+  event.target.style.zIndex = 1000;
+  
+  function moveAt(pageX, pageY) {
+    event.target.style.left = pageX - event.target.offsetWidth / 2 + 'px';
+    event.target.style.top = pageY - event.target.offsetHeight / 2 + 'px';
+  }
+  moveAt(event.pageX, event.pageY);
+
+  document.addEventListener('mousemove', onMouseMove);
+
+  event.target.onmouseup = function() {
+    document.removeEventListener('mousemove', onMouseMove);
+    event.target.onmouseup = null;
+  };
+
+  function onMouseMove(event) {
+    moveAt(event.pageX, event.pageY);
+   
+    event.target.hidden=true;
+    let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+    event.target.hidden=false;
+
+    if (!elemBelow) return;
+    let droppableBelow = elemBelow.closest('.obstacleBoardUnit'); //가장가까운 장애물보드
+    //console.log(droppableBelow);
+    if (currentDroppable != droppableBelow) {
+
+      if (currentDroppable) {
+        // '날아가는 것'을 처리하는 로직(강조 제거)
+        //console.log(currentDroppable);
+        currentDroppable.style.backgroundColor ='';
+
+        document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor=''; //색 설정
+        document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=''; //색 설정
+      }
+      currentDroppable = droppableBelow;
+      if (currentDroppable) {
+        // '들어오는 것'을 처리하는 로직
+        console.log(droppableBelow);
+   
+        droppableBelow.style.backgroundColor ='red';
+        event.target.style.left = 22 + 'px';
+        event.target.style.top = 32 + 'px';
+        colorAdj(currentDroppable)
+         //dropFunc(currentDroppable);
+      }
+    }
+  }
+  function colorAdj(elem){
+    if(dragedDir=='vertical'){ //장애물 방향에 맞게 인접한 boardUnit의 아이디 설정
+      obstacleBoardAdjId[0] = 'e'+(+elem.dataset.row*2) +'e' + (+elem.dataset.col*2+1);
+      obstacleBoardAdjId[1] = 'e'+(+elem.dataset.row*2+2) +'e' + (+elem.dataset.col*2+1);
+    }
+    else {
+      obstacleBoardAdjId[0] = 'e'+(+elem.dataset.row*2+1) +'e' + (+elem.dataset.col*2);
+      obstacleBoardAdjId[1] = 'e'+(+elem.dataset.row*2+1) +'e' + (+elem.dataset.col*2+2);
+    }
+    elem.style.backgroundColor ='red';
+    document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor='red'; //색 설정
+    document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor='red'; //색 설정
+
+  }
+  function dropFunc(elem) {
+    let dropObstacleInfo= {
+      row : elem.dataset.row,
+      col : elem.dataset.col,
+      dir : dragedDir,
+    }
+    console.log(dropObstacleInfo);
+    let possibleInfo = board.isPossibleObstacle(dropObstacleInfo,player1,player2,1);
+    console.log(possibleInfo);
+    if(possibleInfo.isPossible==false){ //위아래좌우 있어서 못놓음
+      return;
+    }
+    //가능
+    setObstacleTo(dropObstacleInfo,"imgId");
+  }
 }
 export function mouseupObstacle(event){ //미사용
+  document.removeEventListener('mousemove', onMouseMove);
+  function onMouseMove(event) {
+    moveAt(event.pageX, event.pageY);
+   
+    event.target.hidden=true;
+    let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+    event.target.hidden=false;
+
+    if (!elemBelow) return;
+    let droppableBelow = elemBelow.closest('.obstacleBoardUnit'); //가장가까운 장애물보드
+    //console.log(droppableBelow);
+    if (currentDroppable != droppableBelow) {
+
+      if (currentDroppable) {
+        // '날아가는 것'을 처리하는 로직(강조 제거)
+        console.log(currentDroppable);
+        currentDroppable.style.backgroundColor ='';
+      }
+      currentDroppable = droppableBelow;
+      if (currentDroppable) {
+        // '들어오는 것'을 처리하는 로직
+        console.log(droppableBelow);
+   
+        droppableBelow.style.backgroundColor ='red';
+         //dropFunc(currentDroppable);
+      }
+    }
+  }
+  event.target.style.position = ''; //기본값 ""
+  // event.target.style.left = 22 + 'px';
+  // event.target.style.top = 32 + 'px';
+ 
+  //ball.onmouseup = null;
   //console.log('mu');
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function dragenterObstacle(event){
   event.preventDefault();
-  
+  console.log("enter");
   let pos={
     row : this.dataset.row,
     col : this.dataset.col,
   };
 
-  if(dragedDir=='vertical'){
+  if(dragedDir=='vertical'){ //장애물 방향에 맞게 인접한 boardUnit의 아이디 설정
     obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
     obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
   }
@@ -278,11 +390,11 @@ export function dragleaveObstacle(event){
   document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=''; //색 설정
 }
 export function dragstartObstacle(event){
-  
+  event.preventDefault(); //드래그기본모션 삭제
+  console.log(event.target);
   event.dataTransfer.setData('imgId',event.target.id);
-  event.dataTransfer.setData('obsDir',event.target.dataset.dir);
   dragedDir=event.target.dataset.dir; //현재 드래그객체 방향
- 
+  
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
     if(elem.dataset.dir!='none'){ //장애물이 존재하는 셀에는 이벤트추가안함.
@@ -309,7 +421,7 @@ export function dragoverObstacle(event){
 }
 export function dropObstacle(event){ //이거동 imgelem아니고 좌표애서
   event.preventDefault();
-
+  console.log("@");
   let imgId=event.dataTransfer.getData('imgId');
 
   let dropObstacleInfo= {
