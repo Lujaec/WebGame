@@ -442,7 +442,7 @@ export function clickObstacle(event){
   }
   else {
     event.target.src="./images/obstacleVertical.png";
-    event.target.dataset.dir='vertical';
+    event.target.dataset.dir='vertical';d
   }
 
 }
