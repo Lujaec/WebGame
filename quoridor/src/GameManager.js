@@ -130,15 +130,15 @@ function setObstacleTo(pos, imgId){
   // }
 
   let obstacleBoardId='o'+pos.row+pos.col;
-  let obstacleBoardAdjId = [];
+  let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
   if(pos.dir=='vertical'){
-    obstacleBoardAdjId[0] = 'e'+pos.row +pos.col;
-    obstacleBoardAdjId[1] = 'e'+(+pos.row+1) +pos.col;
+    obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
+    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
   }
   else {
-    obstacleBoardAdjId[0] = 'e'+pos.row +pos.col;
-    obstacleBoardAdjId[1] = 'e'+pos.row +(+pos.col+1);
-    console.log("@")
+    obstacleBoardAdjId[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
+    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
+   
   }
   console.log(obstacleBoardAdjId[0]);
   console.log(obstacleBoardAdjId[1]);
@@ -148,11 +148,10 @@ function setObstacleTo(pos, imgId){
   document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=OBS_COLOR; //색 설정
  
   document.getElementById(obstacleBoardId).dataset.dir=pos.dir;
-  console.log(document.getElementById(obstacleBoardId));
  
-  positionObstacleOnBoard(imgElem,pos.row,pos.col); //img요소, row, col //보드에 맞는 css 표시
-  imgElem.dataset.isPositioned='true';
-  setDisabled(imgElem); //놓은곳은 이벤트 제거
+  //positionObstacleOnBoard(imgElem,pos.row,pos.col); //img요소, row, col //보드에 맞는 css 표시
+  // imgElem.dataset.isPositioned='true';
+  // setDisabled(imgElem); //놓은곳은 이벤트 제거
   
   board.setObstacleBoardArr(pos.row,pos.col,pos.dir); //obstacle
 }
