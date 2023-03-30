@@ -30,11 +30,16 @@ function createTable(board){
 	}
 	document.querySelector('#container').append(board);
 }
-function createBoardUnit(row, col, className) {
-	row=Math.floor(row/2);
-	col=Math.floor(col/2);
+function createBoardUnit(i, j, className) {
+	let row=Math.floor(i/2);
+	let col=Math.floor(j/2);
 	let elem=document.createElement('td');
+	
 	elem.id=className[0]+row+col;
+	if(className=='emptyBoardUnit'){ //empty요소 id 수정
+		elem.id='e'+i+'e'+j;
+	}
+	
 	if(className!='emptyBoardUnit'){
 		elem.setAttribute("data-row",row); //어차피문자열변환
 		elem.setAttribute("data-col",col); //어차피문자열변환
