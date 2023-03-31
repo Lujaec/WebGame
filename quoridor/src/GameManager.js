@@ -13,7 +13,7 @@ let _nowTurn = null;
 let _nextTurn = null;
 
 let dropObstacleInfo= { //드래그 중인 장애물 정보
-  row : null,
+  row : null, //문자열주의
   col : null,
   dir : null,
   adj : [], //장애물이 같이 놓이는 칸의 id정보
@@ -23,6 +23,21 @@ let dropObstacleInfo= { //드래그 중인 장애물 정보
     document.getElementById('o'+this.row+this.col).style.backgroundColor=color; //색 설정
     document.getElementById(this.adj[0]).style.backgroundColor=color; //색 설정
     document.getElementById(this.adj[1]).style.backgroundColor=color; //색 설정
+  },
+}
+let dragPlayerInfo= { //드래그 중인 플레이어 정보
+  before : {
+    row : null,
+    col : null,
+  },
+  after : {
+    row : null,
+    col : null,
+  },
+  imgId : null,
+  possibleInfo : null,
+  coloringBoard(color) {
+    document.getElementById('p'+this.after.row+this.after.col).style.backgroundColor=color; //색 설정
   },
 }
 
@@ -158,7 +173,7 @@ function setObstacleTo(pos){ //장애물을 옮기는 함수
   
   board.setObstacleBoardArr(pos.row,pos.col,pos.dir); //obstacle
 
-  setDisabled(boardElem); //?없ㅇ도 266행때문에 상관업슴. dir=none이아니먄!!
+  
 }
 
 function setDisabled(elem){
@@ -170,10 +185,19 @@ function setAbled(elem){
 }
 
 
+
 function initPlayerEvents(gameMode){
+  // let a = { k : document.getElementById('p74'),};
+  // console.log(a);
   player1.getElem().addEventListener('dragstart',dragstartPlayer); //분리?
   player1.getElem().addEventListener('dragend',dragendPlayer); //분리?
-  
+  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
+  for(let elem of playerBoardUnits){
+    elem.addEventListener('dragenter',dragenterPlayer);
+    elem.addEventListener('dragleave',dragleavePlayer);
+    elem.addEventListener('dragover',dragoverPlayer);
+    elem.addEventListener('drop',dropPlayer);
+  }
   if(gameMode=='vsPlayer'){
     //console.log('이벤트리스너들어가');
     player2.getElem().addEventListener('dragstart',dragstartPlayer); //분리?
@@ -187,7 +211,7 @@ function initObstacleEvents(gameMode){
 
   for(let elem of obstacleUnits){
     elem.addEventListener('dragstart',dragstartObstacle); //분리?
-    //elem.addEventListener('dragend',dragendObstacle); //분리? 미사용?
+    elem.addEventListener('dragend',dragendObstacle); //분리?
     elem.addEventListener('click',clickObstacle); //분리?
   }
   for(let elem of obstacleBoardUnits){
@@ -201,61 +225,46 @@ function initObstacleEvents(gameMode){
   }
 }
 export function dragenterPlayer(event){
-  this.style.backgroundColor ='yellow';
+  dragPlayerInfo.after.row = +this.dataset.row;
+  dragPlayerInfo.after.col = +this.dataset.col;
+  dragPlayerInfo.coloringBoard('yellow');
 }
 export function dragleavePlayer(event){
-  this.style.backgroundColor ='';
+  dragPlayerInfo.coloringBoard('');
 }
 export function dragstartPlayer(event){  //플레이어를 드래그 시작하면, 플레이어 칸에 이벤트 추가
-  event.dataTransfer.setData('beforeRow',getNowTurn().getPos().row);
-  event.dataTransfer.setData('beforeCol',getNowTurn().getPos().col);
-  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
-  for(let elem of playerBoardUnits){
-    elem.addEventListener('dragenter',dragenterPlayer);
-    elem.addEventListener('dragleave',dragleavePlayer);
-    elem.addEventListener('dragover',dragoverPlayer);
-    elem.addEventListener('drop',dropPlayer);
-  }
-
+  dragPlayerInfo.before.row = getNowTurn().getPos().row;
+  dragPlayerInfo.before.col = getNowTurn().getPos().col;
+  
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit'); //장애물 보드 유닛
   for(let elem of obstacleBoardUnits){ //플레이어이동중에는 장애물유닛 이벤트 막음
     setDisabled(elem);
   }
-}
-export function dragendPlayer(event){ //플레이어를 드래그끝내면
-  //console.log(this.id + ' dragend!')
-  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit');
-  for(let elem of playerBoardUnits){
-    elem.removeEventListener('dragenter',dragenterPlayer);
-    elem.removeEventListener('dragleave',dragleavePlayer);
-    elem.removeEventListener('dragover',dragoverPlayer);
-    elem.removeEventListener('drop',dropPlayer);
+  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit'); //플레이어 보드 유닛
+  for(let elem of playerBoardUnits){ // 플레이어보드 이벤트 열기
+    setAbled(elem);
   }
+}
+export function dragendPlayer(event){
+  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit'); //플레이어 보드 유닛
+  for(let elem of playerBoardUnits){ // 플레이어보드 이벤트 열기
+    setDisabled(elem);
+  }
+
 }
 export function dragoverPlayer(event){
   event.preventDefault(); //없으면 드롭안됨
 }
 export function dropPlayer(event){
   event.preventDefault();
-  let beforeRow=event.dataTransfer.getData('beforeRow');
-  let beforeCol=event.dataTransfer.getData('beforeCol');
-  let beforePos = { //플레이어의 드롭 전 위치
-    row : beforeRow,
-    col : beforeCol,
-  }
-  let afterPos = {  //플레이어의 드롭 후 위치
-    row : this.dataset.row,
-    col : this.dataset.col,
-  }
 
-  this.style.backgroundColor ='';
-  if(!board.isPossibleMove(beforePos,afterPos,0)){
+  dragPlayerInfo.coloringBoard('');
+  if(!board.isPossibleMove(dragPlayerInfo.before,dragPlayerInfo.after,0)){ //불가능한 움직임
     return;
   }
   
-  
-  moveTo(beforePos, afterPos, getNowTurn());
-  //board.printPlayerBoardArr();
+  moveTo(dragPlayerInfo.before,dragPlayerInfo.after, getNowTurn());
+
 
   let leftDest1 = board.isPlayerReachableBFS(player1,board.getObstacleBoardArr(),0);
   let leftDest2 = board.isPlayerReachableBFS(player2,board.getObstacleBoardArr(),8);
@@ -267,20 +276,24 @@ export function dropPlayer(event){
   changeTurn(getNowTurn(),getNextTurn());
  
 }
-/**
- * obstacle Event Handler List..
- * @param {*} event 
- */
 export function dragstartObstacle(event){ //obstacle unit에 부여
   dropObstacleInfo.imgId=event.target.id;//드래그중인 요소의 id
   dropObstacleInfo.dir=event.target.dataset.dir; //현재 드래그객체 방향
+
+  let playerBoardUnits = document.querySelectorAll('.playerBoardUnit'); //플레이어 보드 유닛
+  for(let elem of playerBoardUnits){ //장애물 이동중에는 플레이어보드 이벤트 막음
+    setDisabled(elem);
+  }
+  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit'); //장애물 보드 유닛
+  for(let elem of obstacleBoardUnits){ //플레이어이동중에는 장애물유닛 이벤트 막음
+    if(elem.dataset.dir=='none')
+      setAbled(elem);
+  }
 }
 export function dragenterObstacle(event){ //obstacle board unit에 부여
   event.preventDefault();
-  console.log("enter");
-
-  dropObstacleInfo.row =this.dataset.row;
-  dropObstacleInfo.col =this.dataset.col;
+  dropObstacleInfo.row = +this.dataset.row;
+  dropObstacleInfo.col = +this.dataset.col;
 
   if(dropObstacleInfo.dir=='vertical'){ //장애물 방향에 맞게 인접한 boardUnit의 아이디 설정
     dropObstacleInfo.adj[0] = 'e'+(+dropObstacleInfo.row*2) +'e' + (+dropObstacleInfo.col*2+1);
@@ -290,7 +303,7 @@ export function dragenterObstacle(event){ //obstacle board unit에 부여
     dropObstacleInfo.adj[0] = 'e'+(+dropObstacleInfo.row*2+1) +'e' + (+dropObstacleInfo.col*2);
     dropObstacleInfo.adj[1] = 'e'+(+dropObstacleInfo.row*2+1) +'e' + (+dropObstacleInfo.col*2+2);
   }
-  console.log(dropObstacleInfo);
+
   dropObstacleInfo.possibleInfo = board.isPossibleObstacle(dropObstacleInfo,player1,player2,1);
   if(dropObstacleInfo.possibleInfo.isPossible==false){ //장애물을 못놓는 경우
     return;
@@ -305,11 +318,15 @@ export function dragleaveObstacle(event){ //obstacle board unit에 부여
   dropObstacleInfo.coloringBoard(''); //보드 칠해줌
 }
 export function dragendObstacle(event){ //obstacle unit에 부여 //미사용?
-  console.log(this.id + ' dragend!')  
+  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit'); //장애물 보드 유닛
+  for(let elem of obstacleBoardUnits){ //플레이어이동중에는 장애물유닛 이벤트 막음
+      setDisabled(elem);
+  }
 }
 export function dragoverObstacle(event){ //obstacle board unit에 부여
   event.preventDefault(); 
 }
+
 export function dropObstacle(event){ //obstacle board unit에 부여
   event.preventDefault();
   console.log(dropObstacleInfo.possibleInfo); //보고 지우자
@@ -324,8 +341,7 @@ export function dropObstacle(event){ //obstacle board unit에 부여
   changeTurn(getNowTurn(),getNextTurn());
 }
 export function clickObstacle(event){ //obstacle unit에 부여
- // console.log('clikck!!');
-  //console.log(event.target.src);
+ 
   if(event.target.dataset.dir=='vertical'){
     event.target.src="./images/obstacleHorizontal.png";
     event.target.dataset.dir='horizontal';

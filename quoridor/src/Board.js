@@ -30,20 +30,20 @@ export class Board{
 			console.table(this._obstacleBoardArr);
 		}
 	
-		isPossibleObstacle(obsInfo,p1,p2,isPrint){ // 놓는곳의 좌우/위아래 같은장애물 조사
+		isPossibleObstacle(obsInfo,p1,p2,isPrint){ // 놓는곳, 좌우/위아래 같은장애물 조사
 			let returnInfo = {
 				isPossible : true,
 				minDepth1 : -1,
 				minDepth2 : -1,
 			}
 			let direction = {
-				'vertical' : [[1,0], [-1,0]],
-				'horizontal' : [[0,1], [0,-1]],
+				'vertical' : [[1,0], [-1,0],[0,0]],
+				'horizontal' : [[0,1], [0,-1],[0,0]],
 			}
 			if(isPrint){
 				console.log(`(${obsInfo.row}, ${obsInfo.col})에 ${obsInfo.dir} 장애물 설치`);
 			}
-			for(let i=0;i<2;i++){
+			for(let i=0;i<3;i++){
 				let newRow= +obsInfo.row + direction[obsInfo.dir][i][0];
 				let newCol= +obsInfo.col + direction[obsInfo.dir][i][1];
 			
