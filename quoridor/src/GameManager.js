@@ -11,6 +11,22 @@ export let computer = new Computer("player2", "white",0,4);
 const OBS_COLOR = '#c9a85c';
 let _nowTurn = null;
 let _nextTurn = null;
+
+let dropObstacleInfo= { //드래그 중인 장애물 정보
+  row : null,
+  col : null,
+  dir : null,
+  adj : [], //장애물이 같이 놓이는 칸의 id정보
+  imgId : null,
+  possibleInfo : null,
+  coloringBoard(color) {
+    document.getElementById('o'+this.row+this.col).style.backgroundColor=color; //색 설정
+    document.getElementById(this.adj[0]).style.backgroundColor=color; //색 설정
+    document.getElementById(this.adj[1]).style.backgroundColor=color; //색 설정
+  },
+}
+
+
 function setNowTurn(player){ _nowTurn=player;}
 function getNowTurn(){ return _nowTurn;}
 
@@ -111,49 +127,38 @@ function moveTo(before, after, who){
   document.getElementById(playerBoardId).append(imgElem);
   //board.printPlayerBoardArr();
 }
-function setObstacleTo(pos, imgId){
-  console.log(imgId);
-  console.log(pos);
-  let imgElem=document.getElementById(imgId);  //옮길 이미지 요소
-  imgElem.remove(); //이미지 없애고 칸을색칠하기
-
+function setObstacleTo(pos){ //장애물을 옮기는 함수
   
-
-  //아무거나 가져왓으니가 방향설정
-  // if(pos.dir=='vertical'){
-  //   imgElem.src="./images/obstacleVertical.png";
-  //   imgElem.dataset.dir='vertical';
-  // }
-  // else {
-  //   imgElem.src="./images/obstacleHorizontal.png";
-  //   imgElem.dataset.dir='horizontal';
-  // }
-
   let obstacleBoardId='o'+pos.row+pos.col;
-  let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
+  // let dropObstacleInfo.adj = []; // 장애물이 놓일 인접 칸
+  let boardElem = document.getElementById(obstacleBoardId);
+  
+  //document.getElementById(imgId).remove(); //이미지 없애고 칸을색칠하자
+
   if(pos.dir=='vertical'){
-    obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
-    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
+    dropObstacleInfo.adj[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
+    dropObstacleInfo.adj[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
+    boardElem.style.borderTopColor=OBS_COLOR;
+    boardElem.style.borderBottomColor=OBS_COLOR;
   }
   else {
-    obstacleBoardAdjId[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
-    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
-   
+    dropObstacleInfo.adj[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
+    dropObstacleInfo.adj[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
+    boardElem.style.borderLeftColor=OBS_COLOR;
+    boardElem.style.borderRightColor=OBS_COLOR;
   }
-  console.log(obstacleBoardAdjId[0]);
-  console.log(obstacleBoardAdjId[1]);
+  console.log(dropObstacleInfo.adj[0]);
+  console.log(dropObstacleInfo.adj[1]);
 
-  document.getElementById(obstacleBoardId).style.backgroundColor=OBS_COLOR; //색 설정
-  document.getElementById(obstacleBoardAdjId[0]).style.backgroundColor=OBS_COLOR; //색 설정
-  document.getElementById(obstacleBoardAdjId[1]).style.backgroundColor=OBS_COLOR; //색 설정
- 
-  document.getElementById(obstacleBoardId).dataset.dir=pos.dir;
- 
-  //positionObstacleOnBoard(imgElem,pos.row,pos.col); //img요소, row, col //보드에 맞는 css 표시
-  // imgElem.dataset.isPositioned='true';
-  // setDisabled(imgElem); //놓은곳은 이벤트 제거
+  boardElem.style.backgroundColor=OBS_COLOR; //색 설정
+  document.getElementById(dropObstacleInfo.adj[0]).style.backgroundColor=OBS_COLOR; //색 설정
+  document.getElementById(dropObstacleInfo.adj[1]).style.backgroundColor=OBS_COLOR; //색 설정
+  
+  boardElem.dataset.dir=pos.dir;
   
   board.setObstacleBoardArr(pos.row,pos.col,pos.dir); //obstacle
+
+  setDisabled(boardElem); //?없ㅇ도 266행때문에 상관업슴. dir=none이아니먄!!
 }
 
 function setDisabled(elem){
@@ -178,14 +183,21 @@ function initPlayerEvents(gameMode){
 }
 function initObstacleEvents(gameMode){
   let obstacleUnits = document.querySelectorAll('.obstacleUnit'); //컴푸터일때 선택못하게 하던지, 아니면 커서 막든지
-  //console.log(obstacleUnits);
-  for(let elem of obstacleUnits){
-    elem.addEventListener('mousedown',mousedownObstacle); //분리? 미사영
-    elem.addEventListener('mouseup',mouseupObstacle); //분리? 미사용
-    elem.addEventListener('dragstart',dragstartObstacle); //분리?
-    elem.addEventListener('dragend',dragendObstacle); //분리?
-    elem.addEventListener('click',clickObstacle); //분리?
+  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit'); //장애물 보드 유닛
 
+  for(let elem of obstacleUnits){
+    elem.addEventListener('dragstart',dragstartObstacle); //분리?
+    //elem.addEventListener('dragend',dragendObstacle); //분리? 미사용?
+    elem.addEventListener('click',clickObstacle); //분리?
+  }
+  for(let elem of obstacleBoardUnits){
+    if(elem.dataset.dir!='none'){ //장애물이 존재하는 셀에는 이벤트추가안함.//구현하자
+      continue;
+    }
+    elem.addEventListener('dragenter',dragenterObstacle);
+    elem.addEventListener('dragleave',dragleaveObstacle);
+    elem.addEventListener('dragover',dragoverObstacle);
+    elem.addEventListener('drop',dropObstacle); //함수하나에다넣어?
   }
 }
 export function dragenterPlayer(event){
@@ -203,6 +215,11 @@ export function dragstartPlayer(event){  //플레이어를 드래그 시작하�
     elem.addEventListener('dragleave',dragleavePlayer);
     elem.addEventListener('dragover',dragoverPlayer);
     elem.addEventListener('drop',dropPlayer);
+  }
+
+  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit'); //장애물 보드 유닛
+  for(let elem of obstacleBoardUnits){ //플레이어이동중에는 장애물유닛 이벤트 막음
+    setDisabled(elem);
   }
 }
 export function dragendPlayer(event){ //플레이어를 드래그끝내면
@@ -250,77 +267,63 @@ export function dropPlayer(event){
   changeTurn(getNowTurn(),getNextTurn());
  
 }
-///////////////////////////////////////////////////////////
-export function mousedownObstacle(event){ //미사용
-  //console.log(this);
-  //positionObstacleCenter(this,event.pageX,event.pageY);
+/**
+ * obstacle Event Handler List..
+ * @param {*} event 
+ */
+export function dragstartObstacle(event){ //obstacle unit에 부여
+  dropObstacleInfo.imgId=event.target.id;//드래그중인 요소의 id
+  dropObstacleInfo.dir=event.target.dataset.dir; //현재 드래그객체 방향
 }
-export function mouseupObstacle(event){ //미사용
-  //console.log('mu');
-  //positionObstacleCenter(this,event.pageX,event.pageY);
-}
-export function dragenterObstacle(event){
-  this.style.backgroundColor ='red';
-  let obsDir=event.dataTransfer.getData('obsDir');
-  console.log(obsDir); //출력안됨
-}
-export function dragleaveObstacle(event){
-  this.style.backgroundColor ='';
-}
-export function dragstartObstacle(event){
-  
-  event.dataTransfer.setData('imgId',event.target.id);
-  event.dataTransfer.setData('obsDir',event.target.dataset.dir);
- 
-  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
-  for(let elem of obstacleBoardUnits){
-    if(elem.dataset.dir!='none'){ //장애물이 존재하는 셀에는 이벤트추가안함.
-      continue;
-    }
-    elem.addEventListener('dragenter',dragenterObstacle);
-    elem.addEventListener('dragleave',dragleaveObstacle);
-    elem.addEventListener('dragover',dragoverObstacle);
-    elem.addEventListener('drop',dropObstacle);
-  }
-}
-export function dragendObstacle(event){ //플레이어를 드래그끝내면
-  console.log(this.id + ' dragend!')
-  let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
-  for(let elem of obstacleBoardUnits){
-    elem.removeEventListener('dragenter',dragenterObstacle);
-    elem.removeEventListener('dragleave',dragleaveObstacle);
-    elem.removeEventListener('dragover',dragoverObstacle);
-    elem.removeEventListener('drop',dropObstacle);
-  }
-}
-export function dragoverObstacle(event){
-  event.preventDefault(); 
-}
-export function dropObstacle(event){ //이거동 imgelem아니고 좌표애서
+export function dragenterObstacle(event){ //obstacle board unit에 부여
   event.preventDefault();
+  console.log("enter");
 
-  let imgId=event.dataTransfer.getData('imgId');
+  dropObstacleInfo.row =this.dataset.row;
+  dropObstacleInfo.col =this.dataset.col;
 
-  let dropObstacleInfo= {
-    row : event.target.dataset.row,
-    col : event.target.dataset.col,
-    dir : document.getElementById(imgId).dataset.dir
+  if(dropObstacleInfo.dir=='vertical'){ //장애물 방향에 맞게 인접한 boardUnit의 아이디 설정
+    dropObstacleInfo.adj[0] = 'e'+(+dropObstacleInfo.row*2) +'e' + (+dropObstacleInfo.col*2+1);
+    dropObstacleInfo.adj[1] = 'e'+(+dropObstacleInfo.row*2+2) +'e' + (+dropObstacleInfo.col*2+1);
   }
-
-  this.style.backgroundColor ='';
-  let possibleInfo = board.isPossibleObstacle(dropObstacleInfo,player1,player2,1);
-  console.log(possibleInfo);
-  if(possibleInfo.isPossible==false){ //위아래좌우 있어서 못놓음
+  else {
+    dropObstacleInfo.adj[0] = 'e'+(+dropObstacleInfo.row*2+1) +'e' + (+dropObstacleInfo.col*2);
+    dropObstacleInfo.adj[1] = 'e'+(+dropObstacleInfo.row*2+1) +'e' + (+dropObstacleInfo.col*2+2);
+  }
+  console.log(dropObstacleInfo);
+  dropObstacleInfo.possibleInfo = board.isPossibleObstacle(dropObstacleInfo,player1,player2,1);
+  if(dropObstacleInfo.possibleInfo.isPossible==false){ //장애물을 못놓는 경우
     return;
   }
-  //가능
-  setObstacleTo(dropObstacleInfo,imgId);
-  //document.getElementById("o"+dropObstacleInfo.row+dropObstacleInfo.col).style.backgroundColor=OBS_COLOR;
- 
-  console.log('---'+getNowTurn().getName()+' 턴 종료---');
+  dropObstacleInfo.coloringBoard('red'); //보드 칠해줌
+  
+}
+export function dragleaveObstacle(event){ //obstacle board unit에 부여
+  if(dropObstacleInfo.possibleInfo.isPossible==false){ //장애물을 못놓는 경우
+    return;
+  }
+  dropObstacleInfo.coloringBoard(''); //보드 칠해줌
+}
+export function dragendObstacle(event){ //obstacle unit에 부여 //미사용?
+  console.log(this.id + ' dragend!')  
+}
+export function dragoverObstacle(event){ //obstacle board unit에 부여
+  event.preventDefault(); 
+}
+export function dropObstacle(event){ //obstacle board unit에 부여
+  event.preventDefault();
+  console.log(dropObstacleInfo.possibleInfo); //보고 지우자
+  if(dropObstacleInfo.possibleInfo.isPossible==false){ //장애물을 못놓는 경우
+    return;
+  }
+  document.getElementById(dropObstacleInfo.imgId).remove(); //drop한 이미지 요소 제거
+  
+  setObstacleTo(dropObstacleInfo);
+  
+  console.log('---------'+getNowTurn().getName()+' 턴 종료---------');
   changeTurn(getNowTurn(),getNextTurn());
 }
-export function clickObstacle(event){
+export function clickObstacle(event){ //obstacle unit에 부여
  // console.log('clikck!!');
   //console.log(event.target.src);
   if(event.target.dataset.dir=='vertical'){
@@ -329,7 +332,7 @@ export function clickObstacle(event){
   }
   else {
     event.target.src="./images/obstacleVertical.png";
-    event.target.dataset.dir='vertical';d
+    event.target.dataset.dir='vertical';
   }
 
 }
