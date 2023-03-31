@@ -130,11 +130,7 @@ function setObstacleTo(pos, imgId){
   // }
 
   let obstacleBoardId='o'+pos.row+pos.col;
-  // let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
-  let boardElem = document.getElementById(obstacleBoardId);
-  
-  document.getElementById(imgId).remove(); //이미지 없애고 칸을색칠하자
-
+  let obstacleBoardAdjId = []; // 장애물이 놓일 인접 칸
   if(pos.dir=='vertical'){
     obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
     obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
@@ -264,21 +260,6 @@ export function mouseupObstacle(event){ //미사용
   //positionObstacleCenter(this,event.pageX,event.pageY);
 }
 export function dragenterObstacle(event){
-  event.preventDefault();
-  
-  let pos={
-    row : this.dataset.row,
-    col : this.dataset.col,
-  };
-
-  if(dragedDir=='vertical'){
-    obstacleBoardAdjId[0] = 'e'+(+pos.row*2) +'e' + (+pos.col*2+1);
-    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+2) +'e' + (+pos.col*2+1);
-  }
-  else {
-    obstacleBoardAdjId[0] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2);
-    obstacleBoardAdjId[1] = 'e'+(+pos.row*2+1) +'e' + (+pos.col*2+2);
-  }
   this.style.backgroundColor ='red';
   let obsDir=event.dataTransfer.getData('obsDir');
   console.log(obsDir); //출력안됨
@@ -290,7 +271,6 @@ export function dragstartObstacle(event){
   
   event.dataTransfer.setData('imgId',event.target.id);
   event.dataTransfer.setData('obsDir',event.target.dataset.dir);
-  dragedDir=event.target.dataset.dir; //현재 드래그객체 방향
  
   let obstacleBoardUnits = document.querySelectorAll('.obstacleBoardUnit');
   for(let elem of obstacleBoardUnits){
